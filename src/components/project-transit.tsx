@@ -44,7 +44,7 @@ export const ProjectTransit = () => {
           />
 
           <motion.div
-            className="absolute inset-0 flex items-center justify-center overflow-hidden"
+            className="absolute inset-0 flex items-center justify-center overflow-hidden @container"
             initial={{
               top: enter.rect.top,
               left: enter.rect.left,
@@ -62,11 +62,14 @@ export const ProjectTransit = () => {
             transition={{ duration: ENTER_MS / 1000, ease: EASE_FILM }}
           >
             <motion.h2
-              className="display px-8 text-center text-[clamp(3rem,14vw,9rem)]"
-              initial={{ scale: 0.94, opacity: 0.75, letterSpacing: "0.02em" }}
-              animate={{ scale: 1, opacity: 1, letterSpacing: "-0.03em" }}
+              className="display fit-display px-6 text-center"
+              initial={{ scale: 0.94, opacity: 0.75 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: ENTER_MS / 1000, ease: EASE_FILM }}
-              style={{ color: project.theme.foreground }}
+              style={{
+                color: project.theme.foreground,
+                ["--fit-chars" as string]: String(project.title.length),
+              }}
             >
               {project.title}
             </motion.h2>

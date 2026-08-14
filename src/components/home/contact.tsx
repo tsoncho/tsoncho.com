@@ -6,7 +6,7 @@ export const Contact = () => (
     <Reveal>
       <div className="shell text-center">
         <p className="quiet">{contact.prompt}</p>
-        <p className="display mt-6 text-[clamp(2.4rem,7vw,4.5rem)]">{contact.action}</p>
+        <p className="display mt-6 text-[clamp(2rem,11vw,4.5rem)]">{contact.action}</p>
         <a
           href={`mailto:${site.email}`}
           className="mt-10 inline-block text-lg text-paper transition-opacity hover:opacity-65 md:text-xl"

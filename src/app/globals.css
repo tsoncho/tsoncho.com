@@ -81,6 +81,13 @@ body {
   font-synthesis: none;
 }
 
+.fit-display {
+  width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  font-size: clamp(1.5rem, calc(100cqw / var(--fit-chars, 8) * 1.12), 6.5rem);
+}
+
 .pitch {
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 2.4vw, 1.35rem);

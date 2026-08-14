@@ -82,28 +82,29 @@ export const ProjectScene = ({ project, showLabel = false }: ProjectSceneProps) 
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}
           className={cn(
-            "group relative mx-auto block max-w-[36rem] overflow-hidden outline-none",
+            "group relative mx-auto block w-full max-w-[36rem] @container outline-none",
             opening && "pointer-events-none opacity-0",
           )}
         >
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 group-focus-visible:opacity-100"
+            className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-700 group-hover:opacity-100 group-focus-visible:opacity-100"
             style={{ background: light }}
           />
 
           <Reveal>
-            <p className="pitch mx-auto max-w-md">{project.pitch}</p>
+            <p className="pitch mx-auto max-w-md px-1">{project.pitch}</p>
           </Reveal>
 
           <Reveal delay={0.05}>
             <motion.h2
-              className="display mt-6 text-[clamp(3rem,10vw,6.5rem)] text-paper"
-              style={reduce ? undefined : { x: titleX, y: titleY }}
+              className="display fit-display mt-6 text-paper"
+              style={{
+                ["--fit-chars" as string]: String(project.title.length),
+                ...(reduce ? undefined : { x: titleX, y: titleY }),
+              }}
             >
-              <span className="inline-block transition-transform duration-700 group-hover:scale-[1.012] group-focus-visible:scale-[1.012]">
-                {project.title}
-              </span>
+              {project.title}
             </motion.h2>
           </Reveal>
 
