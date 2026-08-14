@@ -7,13 +7,14 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
 import { INTRO_STORAGE_KEY } from "@/lib/motion";
 
 export type CursorKind = "dot" | "open" | "hidden";
-export type IntroPhase = "pending" | "playing" | "done";
+export type IntroPhase = "playing" | "done";
 
 export interface EnterRect {
   top: number;
@@ -43,31 +44,68 @@ interface CursorValue {
 const ExperienceContext = createContext<ExperienceValue | null>(null);
 const CursorContext = createContext<CursorValue | null>(null);
 
+let introListeners: Array<() => void> = [];
+
+const subscribeIntro = (callback: () => void) => {
+  introListeners.push(callback);
+  return () => {
+    introListeners = introListeners.filter((listener) => listener !== callback);
+  };
+};
+
+const notifyIntro = () => {
+  introListeners.forEach((listener) => listener());
+};
+
+const readIntroSeen = () => {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(INTRO_STORAGE_KEY) === "1";
+};
+
+const subscribeReducedMotion = (callback: () => void) => {
+  const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+};
+
+const readReducedMotion = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
 export const ExperienceProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
-  const [intro, setIntro] = useState<IntroPhase>("pending");
+  const introSeen = useSyncExternalStore(subscribeIntro, readIntroSeen, () => false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    readReducedMotion,
+    () => false,
+  );
   const [enter, setEnter] = useState<ProjectEnter | null>(null);
   const [cursor, setCursor] = useState<CursorKind>("dot");
 
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const seen = sessionStorage.getItem(INTRO_STORAGE_KEY) === "1";
-    const next: IntroPhase = pathname !== "/" || reduce || seen ? "done" : "playing";
-    const frame = window.setTimeout(() => setIntro(next), 0);
-    return () => window.clearTimeout(frame);
-  }, [pathname]);
+  const intro: IntroPhase =
+    pathname !== "/" || introSeen || reducedMotion ? "done" : "playing";
 
   useEffect(() => {
-    const locked = intro === "playing" || Boolean(enter);
-    document.body.style.overflow = locked ? "hidden" : "";
+    if (intro !== "playing") return undefined;
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [intro, enter]);
+  }, [intro]);
+
+  useEffect(() => {
+    if (!enter) return undefined;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [enter]);
 
   const completeIntro = useCallback(() => {
-    sessionStorage.setItem(INTRO_STORAGE_KEY, "1");
-    setIntro("done");
+    localStorage.setItem(INTRO_STORAGE_KEY, "1");
+    notifyIntro();
   }, []);
 
   const beginEnter = useCallback((next: ProjectEnter) => {

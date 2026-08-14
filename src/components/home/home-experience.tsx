@@ -6,7 +6,7 @@ import { WhatIDo } from "@/components/home/what-i-do";
 import type { Project } from "@/content/projects";
 
 export const HomeExperience = ({ projects }: { projects: Project[] }) => (
-  <main id="content">
+  <main id="content" className="w-full overflow-x-clip">
     <Hero />
     <WhatIDo />
     <div id="work" className="scroll-mt-28">

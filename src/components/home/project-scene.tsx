@@ -82,13 +82,13 @@ export const ProjectScene = ({ project, showLabel = false }: ProjectSceneProps) 
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}
           className={cn(
-            "group relative mx-auto block max-w-[36rem] outline-none",
+            "group relative mx-auto block max-w-[36rem] overflow-hidden outline-none",
             opening && "pointer-events-none opacity-0",
           )}
         >
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -inset-x-10 -inset-y-12 opacity-0 transition-opacity duration-700 group-hover:opacity-100 group-focus-visible:opacity-100"
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 group-focus-visible:opacity-100"
             style={{ background: light }}
           />
 

@@ -67,7 +67,6 @@ export default async function ProjectOpenGraphImage({
           style={{
             marginTop: 36,
             fontSize: 28,
-            fontStyle: "italic",
             opacity: 0.55,
             textAlign: "center",
             maxWidth: 720,

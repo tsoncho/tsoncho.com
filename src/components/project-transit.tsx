@@ -44,7 +44,7 @@ export const ProjectTransit = () => {
           />
 
           <motion.div
-            className="absolute flex items-center justify-center overflow-hidden"
+            className="absolute inset-0 flex items-center justify-center overflow-hidden"
             initial={{
               top: enter.rect.top,
               left: enter.rect.left,
@@ -54,8 +54,10 @@ export const ProjectTransit = () => {
             animate={{
               top: 0,
               left: 0,
-              width: "100vw",
-              height: "100dvh",
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
             }}
             transition={{ duration: ENTER_MS / 1000, ease: EASE_FILM }}
           >
