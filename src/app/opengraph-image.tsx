@@ -35,8 +35,9 @@ export default function OpenGraphImage() {
             display: "flex",
             marginTop: 12,
             fontSize: 42,
-            letterSpacing: "-0.04em",
+            letterSpacing: "0.06em",
             lineHeight: 0.9,
+            fontStyle: "italic",
             opacity: 0.55,
           }}
         >

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import { Suspense } from "react";
 import { CustomCursor } from "@/components/custom-cursor";
 import { ExperienceProvider } from "@/components/experience-provider";
@@ -7,9 +7,11 @@ import { ProjectTransit } from "@/components/project-transit";
 import { site } from "@/content/site";
 import "./globals.css";
 
-const geist = Geist({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-geist",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -64,8 +66,8 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geist.variable} h-full antialiased`}>
-      <body className="relative min-h-full bg-ink font-sans text-paper">
+    <html lang="en" className={`${cormorant.variable} h-full antialiased`}>
+      <body className="relative min-h-full bg-ink text-paper">
         <a href="#content" className="skip-link">
           Skip to content
         </a>

@@ -6,8 +6,10 @@ export const INTRO_MS = 3200;
 export const ENTER_MS = 1180;
 
 export const heroTiming = {
-  greeting: { delay: 0.35, duration: 0.8 },
-  name: { delay: 0.95, duration: 1.05 },
-  rule: { delay: 1.85, duration: 0.55 },
-  line: { delay: 2.2, duration: 0.75 },
+  greeting: { delay: 0.2, duration: 0.65 },
+  im: { delay: 0.5, duration: 0.7 },
+  first: { delay: 0.85, duration: 0.75 },
+  last: { delay: 1.15, duration: 0.7 },
+  rule: { delay: 1.7, duration: 0.5 },
+  line: { delay: 2.05, duration: 0.7 },
 } as const;
