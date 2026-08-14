@@ -56,7 +56,7 @@ export default async function ProjectOpenGraphImage({
       >
         <div
           style={{
-            fontSize: 96,
+            fontSize: project.title.length > 14 ? 52 : 96,
             letterSpacing: "-0.04em",
             lineHeight: 0.88,
           }}

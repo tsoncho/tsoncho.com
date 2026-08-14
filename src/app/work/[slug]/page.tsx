@@ -14,5 +14,5 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) notFound();
-  redirect(project.url);
+  redirect(`/work?open=${project.slug}`);
 }

@@ -25,10 +25,16 @@ export const metadata: Metadata = {
   applicationName: site.domainDisplay,
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
-  keywords: ["Tsoncho Terziyski", "tsoncho.com", "LABEL", "MyForexBG"],
-  alternates: {
-    canonical: "/",
-  },
+  keywords: [
+    "Tsoncho Terziyski",
+    "tsoncho.com",
+    "LABEL",
+    "MyForexBG",
+    "Orientalis",
+    "Gymcademy",
+    "VORYN",
+    "Hashomer",
+  ],
   openGraph: {
     type: "website",
     locale: "en_US",

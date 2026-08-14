@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import { HomeExperience } from "@/components/home/home-experience";
-import { getFeaturedProjects } from "@/lib/projects";
+import { site } from "@/content/site";
+import { getProjects } from "@/lib/projects";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    url: site.url,
+  },
+};
 
 export default function Home() {
-  const projects = getFeaturedProjects();
-  return <HomeExperience projects={projects} />;
+  const projectCount = getProjects().length;
+  return <HomeExperience projectCount={projectCount} />;
 }

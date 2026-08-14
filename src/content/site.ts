@@ -39,6 +39,20 @@ export const whatIDo = {
   ],
 } as const;
 
+export const work = {
+  kicker: "Archive",
+  title: "Selected work",
+  line: "A collection of live products, experiments and things in the world.",
+  action: "Open the collection",
+  pageKicker: "Work",
+  pageTitle: "Selected work",
+  pageLine: "Open a card. Read the piece. Visit the live thing.",
+  back: "Index",
+  visit: "Open live",
+  contribution: "Contribution",
+  all: "All",
+} as const;
+
 export const contact = {
   prompt: "Have an idea?",
   action: "Let's talk.",
