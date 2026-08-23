@@ -3,9 +3,8 @@ export const site = {
   firstName: "Tsoncho",
   email: "terziiskitsoncho@gmail.com",
   url: "https://tsoncho.com",
-  title: "Tsoncho Terziyski — Portfolio",
-  description:
-    "Personal portfolio of Tsoncho Terziyski — products, experiments and things built from idea to launch.",
+  title: "Tsoncho Terziyski",
+  description: "Products · Systems · Automation",
   location: "Sofia, Bulgaria",
   year: "2026",
 } as const;
