@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Logo } from "@/components/logo";
 import { ProjectList } from "@/components/project-list";
 import { projects } from "@/content/projects";
 import { projectsPage, site } from "@/content/site";
@@ -18,14 +17,6 @@ export const metadata: Metadata = {
 
 const ProjectsPage = () => (
   <main id="content" className="projects-page">
-    <Link
-      href="/"
-      className="site-logo site-logo--projects"
-      aria-label={`${site.name} — home`}
-    >
-      <Logo className="site-logo-mark" decorative />
-    </Link>
-
     <div className="shell-projects">
       <header className="projects-header">
         <p className="projects-back">

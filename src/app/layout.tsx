@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { site } from "@/content/site";
 import "./globals.css";
 
@@ -53,6 +55,14 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
       <a href="#content" className="skip-link">
         Skip to content
       </a>
+      {/* Persistent brand mark — outside template so nav never remounts/animates it */}
+      <Link
+        href="/"
+        className="site-logo"
+        aria-label={`${site.name} — home`}
+      >
+        <Logo className="site-logo-mark" decorative />
+      </Link>
       {children}
     </body>
   </html>
