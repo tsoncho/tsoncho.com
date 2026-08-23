@@ -338,11 +338,11 @@ body {
   top: max(clamp(1.25rem, 3vh, 2.5rem), env(safe-area-inset-top));
   left: max(var(--gutter), env(safe-area-inset-left));
   z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  line-height: 0;
   text-decoration: none;
   opacity: 0.92;
+  overflow: visible;
   transition: opacity 0.36s var(--ease-settle);
   /* Never participate in page-enter / reveal animations */
   animation: none !important;
@@ -355,10 +355,11 @@ body {
 
 .site-logo-mark {
   display: block;
-  width: clamp(2rem, 1.5rem + 1.4vw, 2.625rem);
+  width: clamp(2.25rem, 1.75rem + 1.5vw, 2.875rem);
   height: auto;
-  /* Reserve space from first paint — prevents layout shift */
-  aspect-ratio: 120 / 126;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
 }
 
 /* ------------------------------------------------------------------ *

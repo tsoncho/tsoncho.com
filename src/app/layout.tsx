@@ -51,6 +51,9 @@ export const viewport: Viewport = {
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang="en">
+    <head>
+      <link rel="preload" as="image" href="/brand/tt-monogram.png" />
+    </head>
     <body>
       <a href="#content" className="skip-link">
         Skip to content
