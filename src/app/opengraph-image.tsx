@@ -38,7 +38,7 @@ const getNameStyle = (name: string) => {
 
 const OpenGraphImage = async () => {
   const { fontSize, maxWidth } = getNameStyle(site.name);
-  const interBlack = await loadGoogleFont(900);
+  const interBold = await loadGoogleFont(700);
 
   return new ImageResponse(
     (
@@ -66,8 +66,8 @@ const OpenGraphImage = async () => {
           <div
             style={{
               fontSize,
-              fontWeight: 900,
-              letterSpacing: "-0.042em",
+              fontWeight: 700,
+              letterSpacing: "-0.038em",
               lineHeight: 1.06,
               color: "#1d1d1f",
               fontFamily: "Inter",
@@ -83,8 +83,8 @@ const OpenGraphImage = async () => {
       fonts: [
         {
           name: "Inter",
-          data: interBlack,
-          weight: 900,
+          data: interBold,
+          weight: 700,
           style: "normal",
         },
       ],
