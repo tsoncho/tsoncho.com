@@ -11,14 +11,16 @@ export const site = {
 } as const;
 
 export const home = {
-  hero: "Hello — I'm Tsoncho Terziyski.",
+  identity: "I'm Tsoncho Terziyski.",
+  statement:
+    "I build products from scratch, automate what can be automated, and fix what doesn't work.",
   contactLead: "Have an idea?",
   contactAction: "Contact me at",
   projectsLabel: "Projects",
 } as const;
 
 export const projectsPage = {
-  title: "Projects",
-  description: "A selection of things I've built.",
+  title: "Selected projects",
+  description: "Selected work by Tsoncho Terziyski.",
   back: "Back",
 } as const;

@@ -17,17 +17,15 @@ export const metadata: Metadata = {
 
 const ProjectsPage = () => (
   <main id="content" className="projects-page">
-    <div className="shell-wide">
+    <div className="shell-projects">
       <header className="projects-header">
-        <p>
+        <p className="projects-back">
           <Link href="/" className="link-muted text-meta">
             ← {projectsPage.back}
           </Link>
         </p>
 
-        <h1 className="text-page-title">{projectsPage.title}</h1>
-
-        <p className="text-body">{projectsPage.description}</p>
+        <h1 className="projects-title">{projectsPage.title}</h1>
       </header>
 
       <ProjectList projects={projects} />

@@ -40,27 +40,11 @@ export const projects: Project[] = [
     year: "2026",
   },
   {
-    title: "The Art of Having Enough",
-    pitch: "A philosophy of money and life. One guide. Instant access.",
-    description:
-      "A digital guide on money as a tool, not a personality — mindset, methods, habits, and systems. Written to be used, not collected. One PDF, one price, no subscription.",
-    url: "https://www.theartofhavingenough.com",
-    year: "2026",
-  },
-  {
     title: "VORYN",
     pitch: "Signal. Discipline. Quiet power.",
     description:
       "VORYN is a premium on-chain brand on Ethereum — a controlled, refined identity for people who move without noise. Token presence, official channels, and verification first.",
     url: "https://voryncoin.com",
-    year: "2026",
-  },
-  {
-    title: "Hashomer",
-    pitch: "A mobile app for Hashomer Hatzair — starting at Ken Sofia.",
-    description:
-      "A community-funded campaign to launch the app kens need: events, attendance, messaging, notifications, and roles for madrichim and hanichim. Built to grow beyond one city.",
-    url: "https://landing-nu-virid.vercel.app",
     year: "2026",
   },
 ];

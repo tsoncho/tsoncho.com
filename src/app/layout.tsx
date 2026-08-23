@@ -34,24 +34,19 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "light dark",
+  viewportFit: "cover",
+  colorScheme: "light",
+  themeColor: "#fafaf8",
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
-  <html lang="en" suppressHydrationWarning>
-    <head>
-      <meta
-        name="theme-color"
-        content="#f7f6f3"
-        media="(prefers-color-scheme: light)"
-      />
-      <meta
-        name="theme-color"
-        content="#111110"
-        media="(prefers-color-scheme: dark)"
-      />
-    </head>
-    <body>{children}</body>
+  <html lang="en">
+    <body>
+      <a href="#content" className="skip-link">
+        Skip to content
+      </a>
+      {children}
+    </body>
   </html>
 );
 

@@ -19,17 +19,19 @@ export const ProjectList = ({ projects }: ProjectListProps) => (
         >
           <span className="project-index">{formatIndex(index)}</span>
 
-          <div className="project-body">
-            <span className="project-title">{project.title}</span>
-            <span className="project-pitch">{project.pitch}</span>
-          </div>
+          <div className="project-main">
+            <div className="project-heading">
+              <span className="project-title">{project.title}</span>
+              <span className="project-year">{project.year}</span>
+            </div>
 
-          <span className="project-meta">
-            <span className="project-year">{project.year}</span>
-            <span className="project-arrow" aria-hidden="true">
-              →
-            </span>
-          </span>
+            <div className="project-detail">
+              <span className="project-pitch">{project.pitch}</span>
+              <span className="project-arrow" aria-hidden="true">
+                →
+              </span>
+            </div>
+          </div>
         </a>
       </li>
     ))}
