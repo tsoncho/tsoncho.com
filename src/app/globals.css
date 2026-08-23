@@ -330,10 +330,43 @@ body {
 }
 
 /* ------------------------------------------------------------------ *
+ * Brand mark
+ * ------------------------------------------------------------------ */
+
+.site-logo {
+  position: absolute;
+  top: max(clamp(1.25rem, 3vh, 2.5rem), env(safe-area-inset-top));
+  left: max(var(--gutter), env(safe-area-inset-left));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  opacity: 0.92;
+  transition: opacity 0.36s var(--ease-settle);
+}
+
+.site-logo:hover,
+.site-logo:focus-visible {
+  opacity: 0.55;
+}
+
+.site-logo-mark {
+  display: block;
+  width: clamp(2rem, 1.5rem + 1.4vw, 2.625rem);
+  height: auto;
+}
+
+.site-logo--projects {
+  position: absolute;
+}
+
+/* ------------------------------------------------------------------ *
  * Home — centered, poster-like composition
  * ------------------------------------------------------------------ */
 
 .home-viewport {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100svh;
@@ -446,6 +479,7 @@ body {
  * ------------------------------------------------------------------ */
 
 .projects-page {
+  position: relative;
   padding-top: max(clamp(2.75rem, 9vh + 0.5rem, 6rem), env(safe-area-inset-top));
   padding-bottom: max(clamp(3.5rem, 10vh + 0.5rem, 7rem), env(safe-area-inset-bottom));
 }
@@ -455,6 +489,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: clamp(2rem, 5vh, 3.5rem);
+  margin-top: clamp(2.5rem, 5vh, 3.75rem);
   margin-bottom: clamp(3.5rem, 9vh, 6.5rem);
 }
 
