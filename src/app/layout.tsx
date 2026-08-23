@@ -1,19 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond } from "next/font/google";
-import { Suspense } from "react";
-import { CustomCursor } from "@/components/custom-cursor";
-import { ExperienceProvider } from "@/components/experience-provider";
-import { ProjectTransit } from "@/components/project-transit";
+import type { ReactNode } from "react";
 import { site } from "@/content/site";
 import "./globals.css";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -22,29 +10,18 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
-  applicationName: site.domainDisplay,
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
-  keywords: [
-    "Tsoncho Terziyski",
-    "tsoncho.com",
-    "LABEL",
-    "MyForexBG",
-    "Orientalis",
-    "Gymcademy",
-    "VORYN",
-    "Hashomer",
-  ],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: site.url,
-    siteName: site.domainDisplay,
+    siteName: site.name,
     title: site.title,
     description: site.description,
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: site.title,
     description: site.description,
   },
@@ -55,40 +32,27 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0b0c",
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
+  colorScheme: "light dark",
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: site.name,
-  url: site.url,
-  email: `mailto:${site.email}`,
-  sameAs: [site.github],
-};
+const RootLayout = ({ children }: { children: ReactNode }) => (
+  <html lang="en" suppressHydrationWarning>
+    <head>
+      <meta
+        name="theme-color"
+        content="#f7f6f3"
+        media="(prefers-color-scheme: light)"
+      />
+      <meta
+        name="theme-color"
+        content="#111110"
+        media="(prefers-color-scheme: dark)"
+      />
+    </head>
+    <body>{children}</body>
+  </html>
+);
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html lang="en" className={`${cormorant.variable} h-full antialiased`}>
-      <body className="relative min-h-full bg-ink text-paper">
-        <a href="#content" className="skip-link">
-          Skip to content
-        </a>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <Suspense fallback={null}>
-          <ExperienceProvider>
-            <CustomCursor />
-            <ProjectTransit />
-            {children}
-          </ExperienceProvider>
-        </Suspense>
-      </body>
-    </html>
-  );
-}
+export default RootLayout;

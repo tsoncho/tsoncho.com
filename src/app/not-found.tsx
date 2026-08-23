@@ -1,20 +1,15 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { site } from "@/content/site";
 
-export const metadata: Metadata = {
-  title: "Not found",
-};
-
-export default function NotFound() {
-  return (
-    <main
-      id="content"
-      className="relative z-10 flex min-h-dvh items-center justify-center px-6"
-    >
-      <Link href="/" className="display text-[clamp(2rem,8vw,4rem)] text-paper/60">
-        {site.shortName}
+const NotFound = () => (
+  <main className="shell py-24">
+    <p className="text-meta">404</p>
+    <h1 className="text-page-title mt-4">Not found</h1>
+    <p className="text-body mt-4">
+      <Link href="/" className="link-muted">
+        Back home
       </Link>
-    </main>
-  );
-}
+    </p>
+  </main>
+);
+
+export default NotFound;
