@@ -16,7 +16,7 @@ export const home = {
     "I build products from scratch, automate what can be automated, and fix what doesn't work.",
   contactLead: "Have an idea?",
   contactAction: "Contact me at",
-  projectsLabel: "Projects",
+  projectsLabel: "My projects",
 } as const;
 
 export const projectsPage = {
