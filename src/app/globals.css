@@ -72,10 +72,10 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 body {
-  min-height: 100dvh;
   min-height: 100svh;
   background: var(--bg);
   color: var(--fg);
@@ -84,6 +84,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
 }
 
 ::selection {
@@ -366,12 +367,30 @@ body {
  * Home — centered, poster-like composition
  * ------------------------------------------------------------------ */
 
+/* Poster homepage — lock to one screen; svh avoids mobile URL-bar scroll jank */
+html:has(.home-viewport),
+html:has(.home-viewport) body {
+  height: 100svh;
+  min-height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
+.page-enter:has(.home-viewport) {
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
 .home-viewport {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 100svh;
   min-height: 100svh;
-  min-height: 100dvh;
+  max-height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
   padding-top: max(clamp(1.25rem, 3vh, 2.5rem), env(safe-area-inset-top));
   padding-bottom: max(clamp(1.25rem, 3vh, 2.5rem), env(safe-area-inset-bottom));
   padding-left: max(var(--gutter), env(safe-area-inset-left));
@@ -465,13 +484,30 @@ body {
 }
 
 @media (max-height: 30rem) {
+  html:has(.home-viewport),
+  html:has(.home-viewport) body {
+    height: auto;
+    min-height: 100svh;
+    max-height: none;
+    overflow: auto;
+  }
+
+  .page-enter:has(.home-viewport) {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   .home-content {
     justify-content: flex-start;
     padding-block: clamp(0.75rem, 2vh, 1.25rem);
   }
 
   .home-viewport {
-    min-height: auto;
+    height: auto;
+    min-height: 100svh;
+    max-height: none;
+    overflow: visible;
   }
 }
 
@@ -483,6 +519,20 @@ body {
   position: relative;
   padding-top: max(clamp(2.75rem, 9vh + 0.5rem, 6rem), env(safe-area-inset-top));
   padding-bottom: max(clamp(3.5rem, 10vh + 0.5rem, 7rem), env(safe-area-inset-bottom));
+}
+
+/* vh-based spacing grows when mobile browser chrome hides — use fixed rhythm on small screens */
+@media (max-width: 48rem) {
+  .projects-page {
+    padding-top: max(2.75rem, env(safe-area-inset-top));
+    padding-bottom: max(3.5rem, env(safe-area-inset-bottom));
+  }
+
+  .projects-header {
+    margin-top: 2.5rem;
+    margin-bottom: 3.5rem;
+    gap: 2rem;
+  }
 }
 
 .projects-header {
