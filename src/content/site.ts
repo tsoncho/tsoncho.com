@@ -13,8 +13,12 @@ export const home = {
   identity: "I'm Tsoncho Terziyski.",
   statement:
     "I build products from scratch, automate what can be automated, and fix what doesn't work.",
-  contactLead: "Have an idea?",
-  contactAction: "Contact me at",
+  contactPhrases: [
+    "Have an idea?",
+    "Don't know where to start?",
+    "Don't have the budget yet?",
+    "Need a fix or automation?",
+  ],
   projectsLabel: "My projects",
 } as const;
 

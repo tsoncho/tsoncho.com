@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RotatingContactLead } from "@/components/rotating-contact-lead";
 import { home, site } from "@/content/site";
 
 const HomePage = () => (
@@ -10,13 +11,15 @@ const HomePage = () => (
           <p className="text-statement reveal reveal-2">{home.statement}</p>
         </div>
 
-        <p className="text-body home-contact reveal reveal-3">
-          {home.contactLead} {home.contactAction}{" "}
-          <a href={`mailto:${site.email}`} className="link">
-            {site.email}
-          </a>
-          .
-        </p>
+        <div className="text-body home-contact reveal reveal-3">
+          <RotatingContactLead phrases={home.contactPhrases} />
+
+          <p className="home-contact-email">
+            <a href={`mailto:${site.email}`} className="link">
+              {site.email}
+            </a>
+          </p>
+        </div>
 
         <p className="home-cta reveal reveal-4">
           <Link href="/projects" className="link-cta">

@@ -1,0 +1,84 @@
+.root {
+  display: block;
+  width: 100%;
+  flex-shrink: 0;
+  color: var(--fg-secondary);
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  transition: height 0.95s var(--ease-settle, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.sizer,
+.phrase {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.sizer {
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.enter {
+  opacity: 0;
+  transform: translateY(5px);
+  animation: contact-enter 0.95s var(--ease-settle, cubic-bezier(0.22, 0.61, 0.36, 1))
+    forwards;
+}
+
+.exit {
+  opacity: 1;
+  transform: translateY(0);
+  animation: contact-exit 0.95s var(--ease-settle, cubic-bezier(0.22, 0.61, 0.36, 1))
+    forwards;
+}
+
+.static {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes contact-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contact-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    transition: none;
+  }
+
+  .enter,
+  .exit {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
