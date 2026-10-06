@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Timed film: 46s, starts on load. */
+/* Timed film: 26s, starts on load. */
 
 :root {
   --bg: #0c0d0f;
@@ -107,7 +107,7 @@ a {
     rgba(103, 104, 255, 0.5) 49.5%,
     transparent 59%
   );
-  animation: accent-plane 46s linear forwards;
+  animation: accent-plane 26s linear forwards;
 }
 
 .plane-soft {
@@ -121,7 +121,7 @@ a {
     rgba(24, 28, 62, 0.42) 52%,
     transparent 74%
   );
-  animation: soft-plane 46s linear forwards;
+  animation: soft-plane 26s linear forwards;
 }
 
 .plane-pulse {
@@ -136,7 +136,7 @@ a {
     transparent 60%
   );
   opacity: 0;
-  animation: pulse-plane 46s linear forwards;
+  animation: pulse-plane 26s linear forwards;
 }
 
 .wash {
@@ -150,7 +150,7 @@ a {
     rgba(244, 240, 230, 0.07) 46%,
     transparent
   );
-  animation: wash 46s linear forwards;
+  animation: wash 26s linear forwards;
 }
 
 .vignette {
@@ -180,7 +180,7 @@ a {
   transform-origin: 0 50%;
   transform: scaleX(0);
   background: var(--accent);
-  animation: bar 36s linear forwards;
+  animation: bar 26s linear forwards;
 }
 
 /* Reel -------------------------------------------------------------------- */
@@ -200,7 +200,7 @@ a {
 }
 
 .reel.is-playing .clock {
-  animation: tick 46s linear forwards;
+  animation: tick 26s linear forwards;
 }
 
 .cam {
@@ -209,7 +209,7 @@ a {
 }
 
 .reel.is-playing .cam {
-  animation: cam 46s linear forwards;
+  animation: cam 26s linear forwards;
 }
 
 .shot,
@@ -594,39 +594,39 @@ a {
   stroke-dashoffset: 22;
 }
 
-/* Playback — 46s ---------------------------------------------------------- */
+/* Playback — 26s ---------------------------------------------------------- */
 
-.reel.is-playing .marks { animation: marks 46s linear forwards; }
-.reel.is-playing .lattice { animation: lattice 46s linear forwards; }
-.reel.is-playing .lattice line { animation: draw 46s linear forwards; }
+.reel.is-playing .marks { animation: marks 26s linear forwards; }
+.reel.is-playing .lattice { animation: lattice 26s linear forwards; }
+.reel.is-playing .lattice line { animation: draw 26s linear forwards; }
 
-.reel.is-playing .intro { animation: intro-move 6.15s linear 0.08s forwards; }
-.reel.is-playing .name { animation: slit 1.2s var(--ease) 0.12s forwards; }
-.reel.is-playing .kicker span:nth-child(1) { animation: from-left 0.7s var(--ease) 1.65s forwards; }
-.reel.is-playing .kicker span:nth-child(2) { animation: from-up 0.7s var(--ease) 2s forwards; }
-.reel.is-playing .kicker span:nth-child(3) { animation: from-right 0.7s var(--ease) 2.35s forwards; }
+.reel.is-playing .intro { animation: intro-move 4.05s linear 0.06s forwards; }
+.reel.is-playing .name { animation: slit 0.9s var(--ease) 0.08s forwards; }
+.reel.is-playing .kicker span:nth-child(1) { animation: from-left 0.55s var(--ease) 1.15s forwards; }
+.reel.is-playing .kicker span:nth-child(2) { animation: from-up 0.55s var(--ease) 1.4s forwards; }
+.reel.is-playing .kicker span:nth-child(3) { animation: from-right 0.55s var(--ease) 1.65s forwards; }
 
-.reel.is-playing .career { animation: career-move 5.7s linear 5.55s forwards; }
-.reel.is-playing .signal { animation: from-up 0.6s var(--ease) 6.55s forwards; }
-.reel.is-playing .rule { animation: rule 5.7s linear 5.55s forwards; }
-.reel.is-playing .note { animation: from-up 0.6s var(--ease) 7.35s forwards; }
+.reel.is-playing .career { animation: career-move 4.05s linear 3.95s forwards; }
+.reel.is-playing .signal { animation: from-up 0.5s var(--ease) 4.65s forwards; }
+.reel.is-playing .rule { animation: rule 4.05s linear 3.95s forwards; }
+.reel.is-playing .note { animation: from-up 0.5s var(--ease) 5.2s forwards; }
 
-.reel.is-playing .practice { animation: stack-move 12.8s linear 10.55s forwards; }
-.reel.is-playing .l1 { animation: arrive-l 0.8s var(--ease) 10.75s forwards; }
-.reel.is-playing .l2 { animation: arrive-c 0.85s var(--ease) 11.4s forwards; }
-.reel.is-playing .l3 { animation: arrive-r 0.8s var(--ease) 12.05s forwards; }
-.reel.is-playing .l4 { animation: arrive-l 0.8s var(--ease) 12.7s forwards; }
-.reel.is-playing .l5 { animation: arrive-r 0.8s var(--ease) 13.35s forwards; }
-.reel.is-playing .l6 { animation: arrive-l 0.8s var(--ease) 14s forwards; }
+.reel.is-playing .practice { animation: stack-move 9.1s linear 7.85s forwards; }
+.reel.is-playing .l1 { animation: arrive-l 0.62s var(--ease) 8s forwards; }
+.reel.is-playing .l2 { animation: arrive-c 0.65s var(--ease) 8.48s forwards; }
+.reel.is-playing .l3 { animation: arrive-r 0.62s var(--ease) 8.96s forwards; }
+.reel.is-playing .l4 { animation: arrive-l 0.62s var(--ease) 9.44s forwards; }
+.reel.is-playing .l5 { animation: arrive-r 0.62s var(--ease) 9.92s forwards; }
+.reel.is-playing .l6 { animation: arrive-l 0.62s var(--ease) 10.4s forwards; }
 
-.reel.is-playing .s1 { animation: relay 3.1s linear 19.15s forwards; }
-.reel.is-playing .s2 { animation: relay 3.1s linear 21.6s forwards; }
-.reel.is-playing .s3 { animation: relay 3.1s linear 24.05s forwards; }
-.reel.is-playing .s4 { animation: relay 3.25s linear 26.5s forwards; }
+.reel.is-playing .s1 { animation: relay 2.35s linear 14.2s forwards; }
+.reel.is-playing .s2 { animation: relay 2.35s linear 15.85s forwards; }
+.reel.is-playing .s3 { animation: relay 2.35s linear 17.5s forwards; }
+.reel.is-playing .s4 { animation: relay 2.45s linear 19.15s forwards; }
 
-.reel.is-playing .future { animation: future-move 4.4s linear 29.35s forwards; }
-.reel.is-playing .credits { animation: credits-in 4.8s linear 33.3s forwards; }
-.reel.is-playing .explore { animation: explore-in 0.7s var(--ease) 34.55s forwards; }
+.reel.is-playing .future { animation: future-move 3.15s linear 21.15s forwards; }
+.reel.is-playing .credits { animation: credits-in 4s linear 24.05s forwards; }
+.reel.is-playing .explore { animation: explore-in 0.55s var(--ease) 24.9s forwards; }
 
 /* Keyframes --------------------------------------------------------------- */
 

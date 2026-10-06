@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 
 const CUES: [number, string][] = [
-  [200, "Tsoncho. Student. Software specialist. Entrepreneur."],
-  [5600, "Junior Software Specialist. ATM and POS. Early career. Fast progression."],
-  [11000, "Software. AI. Automation. Experiments. University. Fitness."],
-  [19600, "Learn. Create. Automate. Improve."],
-  [29600, "What's next?"],
-  [33600, "Let's talk."],
+  [150, "Tsoncho. Student. Software specialist. Entrepreneur."],
+  [3950, "Junior Software Specialist. ATM and POS. Early career. Fast progression."],
+  [7850, "Software. AI. Automation. Experiments. University. Fitness."],
+  [14150, "Learn. Create. Automate. Improve."],
+  [21150, "What's next?"],
+  [24050, "Let's talk."],
 ];
 
 const practice = ["Software", "AI", "Automation", "Experiments", "University", "Fitness"];
@@ -35,8 +35,8 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
     setCue("");
     setCreditsOn(false);
     const timers = CUES.map(([at, text]) => window.setTimeout(() => setCue(text), at));
-    const credits = window.setTimeout(() => setCreditsOn(true), 33300);
-    const open = window.setTimeout(() => onEnded(), 34600);
+    const credits = window.setTimeout(() => setCreditsOn(true), 24000);
+    const open = window.setTimeout(() => onEnded(), 25600);
     return () => {
       timers.forEach((id) => window.clearTimeout(id));
       window.clearTimeout(credits);
