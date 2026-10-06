@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 const CUES: [number, string][] = [
   [150, "Tsoncho. Student. Software specialist. Entrepreneur."],
   [3950, "Junior Software Specialist. ATM and POS. Early career. Fast progression."],
-  [7850, "Software. AI. Automation. Experiments. University. Fitness."],
+  [7850, "Software. AI. Automation. Experiments. Fitness."],
   [14150, "Learn. Create. Automate. Improve."],
   [21150, "What's next?"],
   [24050, "Let's talk."],
 ];
 
-const practice = ["Software", "AI", "Automation", "Experiments", "University", "Fitness"];
+const practice = ["Software", "AI", "Automation", "Experiments", "Fitness"];
 
 type FilmProps = {
   still: boolean;

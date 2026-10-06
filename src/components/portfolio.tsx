@@ -61,7 +61,6 @@ export function Portfolio({ onReplay }: PortfolioProps) {
           <h2 className="display">Interests</h2>
           <ul className="lines">
             <li>Software, AI, and automation</li>
-            <li>University</li>
             <li>Business and entrepreneurship</li>
           </ul>
         </section>
