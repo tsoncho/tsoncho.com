@@ -44,8 +44,7 @@ export function Portfolio({ onReplay }: PortfolioProps) {
             in my career and progressing by looking for what can be improved.
           </p>
           <p>
-            Outside of work, most of my time goes to university, technology,
-            fitness, and learning.
+            Outside of work, most of my time goes to university and technology.
           </p>
         </section>
 
@@ -63,9 +62,7 @@ export function Portfolio({ onReplay }: PortfolioProps) {
           <ul className="lines">
             <li>Software, AI, and automation</li>
             <li>University</li>
-            <li>Fitness</li>
             <li>Business and entrepreneurship</li>
-            <li>Learning</li>
           </ul>
         </section>
 
