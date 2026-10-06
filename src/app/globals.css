@@ -1073,6 +1073,14 @@ a {
   .reel.is-playing .t2,
   .reel.is-playing .t3 { animation-name: settle-y; }
 
+  @keyframes stack-move {
+    0% { opacity: 0; transform: translate(-50%, -44%) scale(0.96); }
+    8% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    40% { opacity: 1; transform: translate(-50%, -50%) scale(1.015); }
+    54% { opacity: 0; transform: translate(-50%, -56%) scale(1.04); }
+    100% { opacity: 0; transform: translate(-50%, -56%) scale(1.04); }
+  }
+
   @keyframes relay {
     0% { opacity: 0; transform: translate(-50%, -50%) translate3d(0, 18px, 0) scale(0.9); }
     28% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
