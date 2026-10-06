@@ -22,7 +22,7 @@ export function Experience() {
     document.documentElement.dataset.phase = phase;
     window.scrollTo(0, 0);
     if (phase === "site") {
-      document.getElementById("top")?.focus();
+      window.getSelection()?.removeAllRanges();
       return;
     }
     if (prefersReduced()) {

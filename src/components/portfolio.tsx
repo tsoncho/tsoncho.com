@@ -29,9 +29,9 @@ export function Portfolio({ onReplay }: PortfolioProps) {
       </header>
 
       <main>
-        <section className="site-hero" aria-labelledby="top">
+        <section id="top" className="site-hero" aria-labelledby="hero-title">
           <p className="eyebrow">Bulgaria</p>
-          <h1 id="top" tabIndex={-1} className="display site-title">
+          <h1 id="hero-title" className="display site-title">
             Tsoncho
           </h1>
           <p className="lede">Student, software specialist and entrepreneur.</p>

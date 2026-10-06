@@ -33,6 +33,10 @@ html[data-phase="film"] {
   height: 100%;
 }
 
+html[data-phase="site"] {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--bg);
   color: var(--fg);
@@ -42,8 +46,8 @@ body {
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--bg);
+  background: rgba(103, 104, 255, 0.28);
+  color: var(--fg);
 }
 
 :focus-visible {
@@ -176,7 +180,7 @@ a {
   transform-origin: 0 50%;
   transform: scaleX(0);
   background: var(--accent);
-  animation: bar 46s linear forwards;
+  animation: bar 36s linear forwards;
 }
 
 /* Reel -------------------------------------------------------------------- */
@@ -522,7 +526,10 @@ a {
   pointer-events: none;
 }
 
-.reel.is-ended .explore,
+.reel.is-ended .explore {
+  pointer-events: auto;
+}
+
 .reel.is-still .explore {
   opacity: 1;
   pointer-events: auto;
@@ -612,13 +619,14 @@ a {
 .reel.is-playing .l5 { animation: arrive-r 0.8s var(--ease) 13.35s forwards; }
 .reel.is-playing .l6 { animation: arrive-l 0.8s var(--ease) 14s forwards; }
 
-.reel.is-playing .s1 { animation: relay 3.2s linear 22.85s forwards; }
-.reel.is-playing .s2 { animation: relay 3.2s linear 25.4s forwards; }
-.reel.is-playing .s3 { animation: relay 3.2s linear 27.95s forwards; }
-.reel.is-playing .s4 { animation: relay 3.35s linear 30.5s forwards; }
+.reel.is-playing .s1 { animation: relay 3.1s linear 19.15s forwards; }
+.reel.is-playing .s2 { animation: relay 3.1s linear 21.6s forwards; }
+.reel.is-playing .s3 { animation: relay 3.1s linear 24.05s forwards; }
+.reel.is-playing .s4 { animation: relay 3.25s linear 26.5s forwards; }
 
-.reel.is-playing .future { animation: future-move 5.4s linear 33.35s forwards; }
-.reel.is-playing .credits { animation: credits-in 6.6s linear 38.15s forwards; }
+.reel.is-playing .future { animation: future-move 4.4s linear 29.35s forwards; }
+.reel.is-playing .credits { animation: credits-in 4.8s linear 33.3s forwards; }
+.reel.is-playing .explore { animation: explore-in 0.7s var(--ease) 34.55s forwards; }
 
 /* Keyframes --------------------------------------------------------------- */
 
@@ -734,8 +742,9 @@ a {
 @keyframes stack-move {
   0% { opacity: 0; transform: translate(-50%, -44%) scale(0.96); }
   6% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  78% { opacity: 1; transform: translate(-50%, -51%) scale(1.035); }
-  100% { opacity: 0; transform: translate(-50%, -60%) scale(1.08); }
+  64% { opacity: 1; transform: translate(-50%, -50%) scale(1.015); }
+  74% { opacity: 0; transform: translate(-50%, -56%) scale(1.04); }
+  100% { opacity: 0; transform: translate(-50%, -56%) scale(1.04); }
 }
 
 @keyframes arrive-l {
@@ -802,6 +811,11 @@ a {
   100% { opacity: 1; transform: translate(-50%, -46%); }
 }
 
+@keyframes explore-in {
+  from { opacity: 0; transform: translateY(0.4rem); }
+  to { opacity: 1; transform: none; }
+}
+
 .eyebrow,
 .brand,
 .site-nav a,
@@ -862,6 +876,7 @@ a {
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .site-nav a:hover {
@@ -890,6 +905,9 @@ a {
 .site-title {
   font-size: clamp(4rem, 12vw, 7.5rem);
   line-height: 0.88;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lede,
@@ -1049,7 +1067,7 @@ a {
 
   .site-hero,
   .site-block {
-    scroll-margin-top: 7.25rem;
+    scroll-margin-top: calc(6.35rem + env(safe-area-inset-top));
   }
 
   .reel.is-playing .t1,
@@ -1099,11 +1117,46 @@ a {
   }
 }
 
+@media (max-width: 900px) {
+  .site-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: max(0.45rem, env(safe-area-inset-top)) 0.85rem 0;
+    border-bottom: 1px solid rgba(244, 240, 230, 0.08);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+  }
+
+  .site-nav nav {
+    width: 100%;
+  }
+
+  .site-nav ul {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    gap: 0;
+  }
+
+  .site-nav a {
+    justify-content: center;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+}
+
 @media (max-width: 380px) {
   .site-nav a {
-    padding: 0 0.2rem;
-    letter-spacing: 0.08em;
-    font-size: 10px;
+    font-size: 9px;
+    letter-spacing: 0.01em;
   }
 }
 
@@ -1113,6 +1166,10 @@ a {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  html[data-phase="site"] {
+    scroll-behavior: auto;
   }
 
   .reel .shot,
