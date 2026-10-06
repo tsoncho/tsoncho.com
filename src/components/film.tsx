@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const CUES: [number, string][] = [
   [150, "Tsoncho. Student. Software specialist. Entrepreneur."],
-  [3950, "Junior Software Specialist. ATM and POS. Early career. Fast progression."],
+  [3950, "Junior Software Specialist. ATM and POS. Early career. Big momentum."],
   [7850, "Software. AI. Automation. Experiments."],
   [14150, "Learn. Create. Automate. Improve."],
   [21150, "What's next?"],
@@ -92,7 +92,7 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
           <p className="display role-line">Junior Software Specialist</p>
           <p className="signal">ATM &amp; POS</p>
           <span className="rule" />
-          <p className="note">Early career. Fast progression.</p>
+          <p className="note">Early career. Big momentum.</p>
         </div>
 
         <div className="shot practice">
