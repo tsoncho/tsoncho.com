@@ -616,7 +616,6 @@ a {
 .reel.is-playing .l2 { animation: arrive-c 0.65s var(--ease) 8.48s forwards; }
 .reel.is-playing .l3 { animation: arrive-r 0.62s var(--ease) 8.96s forwards; }
 .reel.is-playing .l4 { animation: arrive-l 0.62s var(--ease) 9.44s forwards; }
-.reel.is-playing .l5 { animation: arrive-r 0.62s var(--ease) 9.92s forwards; }
 
 .reel.is-playing .s1 { animation: relay 2.35s linear 14.2s forwards; }
 .reel.is-playing .s2 { animation: relay 2.35s linear 15.85s forwards; }
