@@ -1,15 +1,9 @@
 # tsoncho.com
 
-Minimal personal portfolio — editorial typography, system light/dark theme, CSS-only motion.
+Personal site for Tsoncho — student, builder and entrepreneur.
 
 ```bash
-npm install
 npm run dev
 ```
 
-## Pages
-
-- `/` — home
-- `/projects` — curated project index
-
-Project data: `src/content/projects.ts`
+Open [http://localhost:3000](http://localhost:3000).

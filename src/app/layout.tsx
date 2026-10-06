@@ -1,74 +1,64 @@
 import type { Metadata, Viewport } from "next";
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { Logo } from "@/components/logo";
-import { site } from "@/content/site";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const display = Fraunces({
+  variable: "--font-display",
+  subsets: ["latin"],
+  axes: ["SOFT", "WONK", "opsz"],
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL("https://tsoncho.com"),
   title: {
-    default: site.title,
-    template: `%s — ${site.name}`,
+    default: "Tsoncho",
+    template: "%s — Tsoncho",
   },
-  description: site.description,
-  authors: [{ name: site.name, url: site.url }],
-  creator: site.name,
+  description:
+    "Tsoncho — Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
+  authors: [{ name: "Tsoncho", url: "https://tsoncho.com" }],
+  icons: { icon: "/favicon.svg" },
   openGraph: {
+    title: "Tsoncho",
+    description:
+      "Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
+    url: "https://tsoncho.com",
+    siteName: "tsoncho.com",
+    locale: "en",
     type: "website",
-    locale: "en_US",
-    url: site.url,
-    title: site.title,
-    description: site.description,
   },
   twitter: {
-    card: "summary_large_image",
-    title: site.title,
-    description: site.description,
-  },
-  icons: {
-    icon: [
-      { url: "/icon.png", sizes: "32x32", type: "image/png" },
-      { url: "/brand/icon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/brand/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
-  },
-  robots: {
-    index: true,
-    follow: true,
+    card: "summary",
+    title: "Tsoncho",
+    description:
+      "Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
   },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  colorScheme: "light",
-  themeColor: "#fafaf8",
+  themeColor: "#0c0d0f",
+  colorScheme: "dark",
 };
 
-const RootLayout = ({ children }: { children: ReactNode }) => (
-  <html lang="en">
-    <head>
-      <link rel="preload" as="image" href="/brand/tt-monogram.png" />
-    </head>
-    <body>
-      <a href="#content" className="skip-link">
-        Skip to content
-      </a>
-      {/* Persistent brand mark — outside template so nav never remounts/animates it */}
-      <Link
-        href="/"
-        className="site-logo"
-        aria-label={`${site.name} — home`}
-      >
-        <Logo className="site-logo-mark" decorative />
-      </Link>
-      {children}
-    </body>
-  </html>
-);
-
-export default RootLayout;
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}
+    >
+      <body className="min-h-full bg-background font-sans text-foreground">
+        {children}
+      </body>
+    </html>
+  );
+}
