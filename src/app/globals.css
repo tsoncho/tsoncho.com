@@ -518,32 +518,99 @@ a {
 .continue {
   position: fixed;
   left: 50%;
-  bottom: max(1.6rem, calc(env(safe-area-inset-bottom) + 1.1rem));
+  bottom: max(1.35rem, calc(env(safe-area-inset-bottom) + 0.85rem));
   z-index: 46;
-  min-height: 2.5rem;
-  padding: 0.35rem 0.2rem;
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  color: var(--accent);
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  min-width: min(18rem, calc(100vw - 2rem));
+  min-height: 4.25rem;
+  padding: 0.85rem 1.4rem 0.7rem;
+  color: var(--fg);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, 0.45rem);
+  transform: translate(-50%, 0.65rem);
 }
 
-.continue span {
-  display: inline-block;
-  margin-left: 0.35em;
-  transition: transform 0.45s var(--ease);
+.continue-rail {
+  display: block;
+  width: 4.5rem;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 18%,
+    var(--accent) 82%,
+    transparent
+  );
+  transform: scaleX(0);
+  transform-origin: center;
 }
 
-.continue:hover span,
-.continue:focus-visible span {
-  transform: translateX(0.2rem);
+.continue-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.continue-label {
+  font-size: 12px;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  color: var(--fg);
+}
+
+.continue-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 1px solid rgba(103, 104, 255, 0.55);
+  border-radius: 999px;
+  background: rgba(103, 104, 255, 0.08);
+  box-shadow: 0 0 0 0 rgba(103, 104, 255, 0.18);
+}
+
+.continue-chevron {
+  display: block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg) translateX(-1px);
+}
+
+.continue-hint {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+
+.continue:hover .continue-mark,
+.continue:focus-visible .continue-mark {
+  border-color: var(--accent);
+  background: rgba(103, 104, 255, 0.16);
+  transform: translateX(0.15rem);
+}
+
+.continue:hover .continue-label,
+.continue:focus-visible .continue-label {
+  color: var(--accent);
 }
 
 .reel.is-continue .continue {
-  animation: continue-in 0.7s var(--ease) 0.18s forwards;
+  animation: continue-in 0.38s var(--ease) forwards;
   pointer-events: auto;
+}
+
+.reel.is-continue .continue-rail {
+  animation: continue-rail 0.45s var(--ease) forwards;
+}
+
+.reel.is-continue .continue-mark {
+  animation: continue-pulse 1.8s var(--ease) 0.35s infinite;
 }
 
 .skip {
@@ -718,11 +785,11 @@ a {
 
 /* Momentum */
 .reel[data-scene="momentum"][data-beat="enter"] .momentum { animation: shot-in 0.55s var(--ease) forwards; }
-.reel[data-scene="momentum"][data-beat="enter"] .s1 { animation: relay 1.15s linear 0.15s forwards; }
-.reel[data-scene="momentum"][data-beat="enter"] .s2 { animation: relay 1.15s linear 1.15s forwards; }
-.reel[data-scene="momentum"][data-beat="enter"] .s3 { animation: relay 1.15s linear 2.15s forwards; }
-.reel[data-scene="momentum"][data-beat="enter"] .s4 { animation: relay 1.15s linear 3.15s forwards; }
-.reel[data-scene="momentum"][data-beat="enter"] .phrase { animation: phrase-in 0.7s var(--ease) 4.35s forwards; }
+.reel[data-scene="momentum"][data-beat="enter"] .s1 { animation: relay 1s linear 0.1s forwards; }
+.reel[data-scene="momentum"][data-beat="enter"] .s2 { animation: relay 1s linear 0.95s forwards; }
+.reel[data-scene="momentum"][data-beat="enter"] .s3 { animation: relay 1s linear 1.8s forwards; }
+.reel[data-scene="momentum"][data-beat="enter"] .s4 { animation: relay 1s linear 2.65s forwards; }
+.reel[data-scene="momentum"][data-beat="enter"] .phrase { animation: phrase-in 0.55s var(--ease) 3.55s forwards; }
 .reel[data-scene="momentum"][data-beat="hold"] .momentum { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 .reel[data-scene="momentum"][data-beat="hold"] .step { opacity: 0; }
 .reel[data-scene="momentum"][data-beat="hold"] .phrase { opacity: 1; transform: none; }
@@ -889,7 +956,17 @@ a {
 
 @keyframes continue-in {
   from { opacity: 0; transform: translate(-50%, 0.55rem); }
-  to { opacity: 0.9; transform: translate(-50%, 0); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes continue-rail {
+  from { transform: scaleX(0); opacity: 0.2; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes continue-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(103, 104, 255, 0.22); }
+  50% { box-shadow: 0 0 0 0.55rem rgba(103, 104, 255, 0); }
 }
 
 .eyebrow,
