@@ -11,7 +11,6 @@ export function Scene() {
         <div className="vignette" />
       </div>
       <div className="grain" aria-hidden="true" />
-      <div className="progress" aria-hidden="true" />
     </>
   );
 }

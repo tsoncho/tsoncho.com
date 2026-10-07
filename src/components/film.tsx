@@ -1,61 +1,147 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
-const CUES: [number, string][] = [
-  [150, "Tsoncho. Student. Software specialist. Entrepreneur."],
-  [3950, "Junior Software Specialist. ATM and POS. Early career. Big momentum."],
-  [7850, "Software. AI. Automation. Experiments."],
-  [14150, "Learn. Create. Automate. Improve."],
-  [21150, "What's next?"],
-  [24050, "Let's talk."],
+const practice = ["Software", "AI", "Automation", "Experiments"] as const;
+const verbs = ["Learn", "Create", "Automate", "Improve"] as const;
+
+type SceneKey = "intro" | "career" | "practice" | "momentum" | "future" | "ending";
+type Beat = "enter" | "hold" | "leave";
+
+const SCENES: {
+  key: SceneKey;
+  cue: string;
+  settleAt: number;
+  final?: boolean;
+}[] = [
+  {
+    key: "intro",
+    cue: "Tsoncho. Student. Software specialist. Entrepreneur.",
+    settleAt: 3200,
+  },
+  {
+    key: "career",
+    cue: "Junior Software Specialist. ATM and POS. Early in. Already moving.",
+    settleAt: 3400,
+  },
+  {
+    key: "practice",
+    cue: "Software. AI. Automation. Experiments.",
+    settleAt: 4200,
+  },
+  {
+    key: "momentum",
+    cue: "Learn. Create. Automate. Improve.",
+    settleAt: 5600,
+  },
+  {
+    key: "future",
+    cue: "What's next?",
+    settleAt: 2800,
+  },
+  {
+    key: "ending",
+    cue: "Let's talk.",
+    settleAt: 2400,
+    final: true,
+  },
 ];
 
-const practice = ["Software", "AI", "Automation", "Experiments"];
+const LEAVE_MS = 900;
 
 type FilmProps = {
   still: boolean;
-  ended: boolean;
-  onEnded: () => void;
-  onSkip: () => void;
   onExplore: () => void;
 };
 
-export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
-  const [cue, setCue] = useState(still ? "Let's talk." : "");
-  const [creditsOn, setCreditsOn] = useState(still);
+export function Film({ still, onExplore }: FilmProps) {
+  const [index, setIndex] = useState(still ? SCENES.length - 1 : 0);
+  const [beat, setBeat] = useState<Beat>(still ? "hold" : "enter");
+  const [runId, setRunId] = useState(0);
+  const [ready, setReady] = useState(still);
+  const [ended, setEnded] = useState(still);
+
+  const scene = SCENES[index];
+  const cue = scene.cue;
+  const isFinal = Boolean(scene.final);
+  const showContinue = ready && !isFinal && beat === "hold";
+  const progress = (index + (beat === "leave" ? 1 : ready || isFinal ? 1 : 0.55)) / SCENES.length;
 
   useEffect(() => {
     if (still) {
-      setCue("Let's talk.");
-      setCreditsOn(true);
+      setIndex(SCENES.length - 1);
+      setBeat("hold");
+      setReady(true);
+      setEnded(true);
       return;
     }
 
-    setCue("");
-    setCreditsOn(false);
-    const timers = CUES.map(([at, text]) => window.setTimeout(() => setCue(text), at));
-    const credits = window.setTimeout(() => setCreditsOn(true), 24000);
-    const open = window.setTimeout(() => onEnded(), 25600);
-    return () => {
-      timers.forEach((id) => window.clearTimeout(id));
-      window.clearTimeout(credits);
-      window.clearTimeout(open);
-    };
-  }, [still]);
+    if (beat !== "enter") return;
 
-  const className = ["reel", "is-playing", still ? "is-still" : "", ended ? "is-ended" : ""]
+    setReady(false);
+    setEnded(false);
+
+    const settle = window.setTimeout(() => {
+      setBeat("hold");
+      setReady(true);
+      if (SCENES[index].final) setEnded(true);
+    }, SCENES[index].settleAt);
+
+    return () => window.clearTimeout(settle);
+  }, [still, index, runId, beat]);
+
+  useEffect(() => {
+    if (!ended) return;
+    document.querySelector<HTMLButtonElement>(".explore")?.focus();
+  }, [ended, runId]);
+
+  function goTo(next: number) {
+    setReady(false);
+    setEnded(false);
+    setBeat("leave");
+    window.setTimeout(() => {
+      setIndex(next);
+      setBeat("enter");
+      setRunId((id) => id + 1);
+    }, LEAVE_MS);
+  }
+
+  function onContinue() {
+    if (!showContinue || index >= SCENES.length - 1) return;
+    goTo(index + 1);
+  }
+
+  function onSkip() {
+    if (isFinal && beat !== "leave") return;
+    goTo(SCENES.length - 1);
+  }
+
+  const className = [
+    "reel",
+    "is-playing",
+    still ? "is-still" : "",
+    ended ? "is-ended" : "",
+    ready ? "is-ready" : "",
+    showContinue ? "is-continue" : "",
+  ]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <section className={className} aria-label="Film">
+    <section
+      className={className}
+      aria-label="Film"
+      data-scene={scene.key}
+      data-beat={beat}
+      data-run={runId}
+      style={{ "--film-progress": String(Math.min(1, Math.max(0, progress))) } as CSSProperties}
+    >
       <div
-        className="clock"
-        onAnimationEnd={(event) => {
-          if (event.animationName === "tick") onEnded();
-        }}
+        className="progress"
+        aria-hidden="true"
+        style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress))})` }}
       />
+
       <p className="sr-only" aria-live="polite">
         {cue}
       </p>
@@ -78,7 +164,7 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
         </g>
       </svg>
 
-      <div className="cam">
+      <div className="cam" key={`cam-${runId}-${scene.key}`}>
         <div className="shot intro">
           <p className="display name">Tsoncho</p>
           <p className="kicker">
@@ -92,27 +178,38 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
           <p className="display role-line">Junior Software Specialist</p>
           <p className="signal">ATM &amp; POS</p>
           <span className="rule" />
-          <p className="note">Early career. Big momentum.</p>
+          <p className="note">Early in. Already moving.</p>
         </div>
 
         <div className="shot practice">
-          {practice.map((word, index) => (
-            <p key={word} className={`display line l${index + 1}`}>
+          {practice.map((word, i) => (
+            <p key={word} className={`display line l${i + 1}`}>
               {word}
             </p>
           ))}
         </div>
 
         <div className="shot momentum">
-          <p className="display step s1">Learn</p>
-          <p className="display step s2">Create</p>
-          <p className="display step s3">Automate</p>
-          <p className="display step s4">Improve</p>
+          <div className="relay-stage" aria-hidden="true">
+            {verbs.map((word, i) => (
+              <p key={word} className={`display step s${i + 1}`}>
+                {word}
+              </p>
+            ))}
+          </div>
+          <p className="display phrase">
+            {verbs.map((word, i) => (
+              <span key={word} className="phrase-part">
+                {i > 0 ? <span className="phrase-arrow">→</span> : null}
+                <span>{word}</span>
+              </span>
+            ))}
+          </p>
         </div>
 
         <p className="display shot future">What&apos;s next?</p>
 
-        <div className="credits" inert={creditsOn ? undefined : true}>
+        <div className="credits" inert={ended || still ? undefined : true}>
           <p className="display end-line">Let&apos;s talk.</p>
           <a className="mail" href="mailto:terziiskitsoncho@gmail.com">
             terziiskitsoncho@gmail.com
@@ -121,14 +218,30 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
             className="explore"
             type="button"
             onClick={onExplore}
-            tabIndex={ended ? 0 : -1}
+            tabIndex={ended || still ? 0 : -1}
           >
-            Enter portfolio
+            Enter portfolio →
           </button>
         </div>
       </div>
 
-      <button className="skip" type="button" onClick={onSkip}>
+      <button
+        className="continue"
+        type="button"
+        onClick={onContinue}
+        tabIndex={showContinue ? 0 : -1}
+        aria-hidden={!showContinue}
+      >
+        Continue <span aria-hidden="true">→</span>
+      </button>
+
+      <button
+        className="skip"
+        type="button"
+        onClick={onSkip}
+        tabIndex={isFinal ? -1 : 0}
+        aria-hidden={isFinal}
+      >
         Skip intro
       </button>
     </section>
