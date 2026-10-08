@@ -206,7 +206,7 @@ export function Landing() {
             </h1>
           </div>
           <p className="scroll-cue" aria-hidden="true">
-            Swipe up
+            Swipe
           </p>
         </section>
 
