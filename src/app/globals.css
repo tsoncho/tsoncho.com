@@ -397,8 +397,8 @@ main {
 
 .hero-frame {
   grid-row: 2;
-  transform: translate3d(0, calc(var(--h, 0) * -3vh), 0);
-  opacity: calc(1 - var(--h, 0) * 0.45);
+  opacity: calc(1 - var(--h, 0) * 0.35);
+  transition: opacity 0.2s linear;
 }
 
 .hero-title {
@@ -409,8 +409,6 @@ main {
   row-gap: 0.05em;
   max-width: 14ch;
   font-size: clamp(2.8rem, 9.5vw, 6.75rem);
-  transform-origin: center;
-  transform: scale(calc(1 - var(--h, 0) * 0.08));
 }
 
 .hero-word {

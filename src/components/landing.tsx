@@ -138,9 +138,11 @@ export function Landing() {
     let touchY = 0;
     let touchArmed = false;
     let pinExplore = false;
+    let pinHero = false;
     let wheelQuietUntil = 0;
     const lastDomain = domains.length - 1;
     const EXPLORE = 1;
+    const HOME = 0;
 
     const panels = () =>
       Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
@@ -189,12 +191,47 @@ export function Landing() {
       window.history.replaceState(window.history.state ?? null, "", path);
     };
 
+    const freezeHero = () => {
+      const hero = root.querySelector<HTMLElement>("[data-hero]");
+      if (!hero) return;
+      hero.style.setProperty("--h", "0");
+      hero.removeAttribute("data-scrolled");
+    };
+
     const goTo = (index: number, instant = false) => {
       const list = panels();
       const next = Math.min(list.length - 1, Math.max(0, index));
       const panel = list[next];
       if (!panel) return;
       syncUrl(next);
+
+      if (next === HOME) {
+        pinHero = true;
+        freezeHero();
+        enableSnap(false);
+        lockedRef.current = true;
+        window.clearTimeout(lockTimer);
+        if (instant || reduced) {
+          window.scrollTo(0, panelTop(HOME));
+          freezeHero();
+          pinHero = false;
+          lockedRef.current = false;
+          enableSnap(true);
+          return;
+        }
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        lockTimer = window.setTimeout(() => {
+          alignPanel(HOME);
+          freezeHero();
+          pinHero = false;
+          lockedRef.current = false;
+          enableSnap(true);
+          quietWheel(160);
+          measure();
+        }, 820);
+        return;
+      }
+
       if (instant || reduced) {
         enableSnap(false);
         window.scrollTo(0, panelTop(next));
@@ -218,16 +255,26 @@ export function Landing() {
       const max = Math.max(1, document.documentElement.scrollHeight - vh);
       root.style.setProperty("--page", (window.scrollY / max).toFixed(4));
 
+      const index = activeIndex();
       const hero = root.querySelector<HTMLElement>("[data-hero]");
       if (hero) {
         const rect = hero.getBoundingClientRect();
-        const local = Math.min(1, Math.max(0, -rect.top / Math.max(1, vh * 0.55)));
+        const nearHome = Math.abs(rect.top) < 10;
+        // Parallax only while leaving the hero — never while returning/settling.
+        const leaving =
+          index === 0 &&
+          !nearHome &&
+          !pinHero &&
+          urlIndexRef.current === 0 &&
+          !lockedRef.current;
+        const local = leaving
+          ? Math.min(1, Math.max(0, -rect.top / Math.max(1, vh * 0.55)))
+          : 0;
         hero.style.setProperty("--h", local.toFixed(4));
         if (local > 0.08) hero.setAttribute("data-scrolled", "");
         else hero.removeAttribute("data-scrolled");
       }
 
-      const index = activeIndex();
       root.dataset.panel = String(index);
       panels().forEach((panel, i) => {
         panel.dataset.active = i === index ? "true" : "false";
@@ -243,14 +290,28 @@ export function Landing() {
         alignPanel(EXPLORE);
         return;
       }
+      if (pinHero) {
+        alignPanel(0);
+        freezeHero();
+        return;
+      }
       if (frame) return;
       frame = requestAnimationFrame(measure);
     };
 
-    const lockBriefly = (ms = 780) => {
+    const lockBriefly = (ms = 780, settle?: 0 | typeof EXPLORE) => {
       lockedRef.current = true;
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
+        if (settle === 0) {
+          alignPanel(0);
+          freezeHero();
+          pinHero = false;
+          enableSnap(true);
+        }
+        if (settle === EXPLORE) {
+          alignPanel(EXPLORE);
+        }
         lockedRef.current = false;
         measure();
       }, ms);
@@ -306,11 +367,11 @@ export function Landing() {
       const nextPanel = panel + direction;
       if (nextPanel < 0 || nextPanel > panels().length - 1) return;
 
-      lockBriefly();
       quietWheel(200);
       if (nextPanel === EXPLORE) {
         setDomain(direction === 1 ? 0 : lastDomain);
       }
+      if (nextPanel !== HOME) lockBriefly();
       goTo(nextPanel);
     };
 
