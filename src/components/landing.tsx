@@ -23,15 +23,6 @@ const domains = [
 
 const verbs = ["Learn", "Create", "Automate", "Improve"] as const;
 
-const nowItems = [
-  "Junior Software Specialist",
-  "ATM & POS",
-  "Software",
-  "AI",
-  "Automation",
-  "Experiments",
-] as const;
-
 function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -102,8 +93,8 @@ export function Landing() {
           Tsoncho
         </a>
         <nav aria-label="Page">
-          <a href="#about">About</a>
           <a href="#work">Work</a>
+          <a href="#explore">Explore</a>
           <a href="#contact">Contact</a>
         </nav>
       </header>
@@ -127,35 +118,6 @@ export function Landing() {
         </section>
 
         <section
-          id="about"
-          className="band identity"
-          data-track
-          data-stages="5"
-          aria-labelledby="identity-title"
-        >
-          <div className="pin">
-            <div className="frame">
-              <p className="label">01 — Identity</p>
-              <h2 id="identity-title" className="type-lg statement">
-                I make things move.
-              </h2>
-              <div className="verb-stage" aria-hidden="true">
-                {verbs.map((verb, index) => (
-                  <p key={verb} className="type-lg verb" data-i={index}>
-                    {verb}.
-                  </p>
-                ))}
-              </div>
-              <ul className="sr-only">
-                {verbs.map((verb) => (
-                  <li key={verb}>{verb}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section
           id="work"
           className="band role"
           data-track
@@ -164,7 +126,7 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">02 — Role</p>
+              <p className="label">01 — Role</p>
               <div className="role-stage">
                 <h2 id="role-title" className="type-md role-line" data-i="0">
                   Junior Software Specialist
@@ -181,6 +143,7 @@ export function Landing() {
         </section>
 
         <section
+          id="explore"
           className="band domains"
           data-track
           data-stages="4"
@@ -188,7 +151,7 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">03 — Explore</p>
+              <p className="label">02 — Explore</p>
               <h2 id="domains-title" className="sr-only">
                 What I do
               </h2>
@@ -212,7 +175,7 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">04 — System</p>
+              <p className="label">03 — System</p>
               <h2 id="think-title" className="sr-only">
                 How I think
               </h2>
@@ -234,37 +197,9 @@ export function Landing() {
           </div>
         </section>
 
-        <section className="band now" aria-labelledby="now-title">
-          <div className="frame now-frame">
-            <p className="label">05 — Now</p>
-            <h2 id="now-title" className="type-xl now-title">
-              Now
-            </h2>
-            <ul className="now-list">
-              {nowItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <p className="type-md now-end">Exploring what&apos;s next.</p>
-          </div>
-        </section>
-
-        <section className="band future" aria-labelledby="future-title">
-          <div className="frame future-frame">
-            <h2 id="future-title" className="type-xl future-title">
-              What&apos;s next?
-            </h2>
-            <ul className="future-lines">
-              <li>Create more.</li>
-              <li>Learn faster.</li>
-              <li>Go further.</li>
-            </ul>
-          </div>
-        </section>
-
         <section id="contact" className="band contact" aria-labelledby="contact-title">
           <div className="frame contact-frame">
-            <p className="label">06 — Contact</p>
+            <p className="label">04 — Contact</p>
             <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>

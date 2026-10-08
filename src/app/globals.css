@@ -201,8 +201,6 @@ a {
 .topbar nav a,
 .label,
 .scroll-cue,
-.now-list,
-.future-lines,
 .contact-links,
 .page-foot {
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -396,48 +394,6 @@ main {
   }
 }
 
-/* Identity ---------------------------------------------------------------- */
-
-.identity {
-  height: 280vh;
-}
-
-.statement {
-  max-width: 12ch;
-  opacity: calc(1 - max(0, (var(--p) - 0.06) / 0.18));
-  transform: translate3d(0, calc(var(--p) * -2vh), 0)
-    scale(calc(1 - min(0.08, var(--p) * 0.25)));
-  filter: blur(calc(min(6px, var(--p) * 14px)));
-}
-
-.verb-stage {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-}
-
-.verb {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transform: translate3d(0, 8vh, 0) scale(1.04);
-  filter: blur(6px);
-  transition:
-    opacity 0.55s var(--ease-move),
-    transform 0.7s var(--ease-move),
-    filter 0.55s var(--ease-move);
-}
-
-.identity[data-stage="1"] .verb[data-i="0"],
-.identity[data-stage="2"] .verb[data-i="1"],
-.identity[data-stage="3"] .verb[data-i="2"],
-.identity[data-stage="4"] .verb[data-i="3"] {
-  opacity: 1;
-  transform: none;
-  filter: blur(0);
-}
-
 /* Role -------------------------------------------------------------------- */
 
 .role {
@@ -587,72 +543,6 @@ main {
   opacity: calc(var(--p) * 1.15);
 }
 
-/* Now --------------------------------------------------------------------- */
-
-.now {
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  padding: var(--space-9) var(--gutter);
-  box-sizing: border-box;
-}
-
-.now-frame {
-  gap: 0;
-}
-
-.now-title {
-  margin-top: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.now-list {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  width: min(100%, 22rem);
-  display: grid;
-  gap: 0;
-  color: var(--muted);
-}
-
-.now-list li {
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid rgba(244, 240, 230, 0.08);
-}
-
-.now-list li:first-child {
-  border-top: 1px solid rgba(244, 240, 230, 0.08);
-}
-
-.now-end {
-  margin-top: var(--space-6);
-  max-width: 12ch;
-}
-
-/* Future ------------------------------------------------------------------ */
-
-.future {
-  min-height: 80svh;
-  display: grid;
-  place-items: center;
-  padding: var(--space-8) var(--gutter);
-  box-sizing: border-box;
-}
-
-.future-title {
-  font-weight: 450;
-}
-
-.future-lines {
-  list-style: none;
-  margin: var(--space-6) 0 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-3);
-  color: var(--quiet);
-}
-
 /* Contact ----------------------------------------------------------------- */
 
 .contact {
@@ -735,10 +625,6 @@ main {
     margin-top: var(--space-4);
   }
 
-  .identity {
-    height: 250vh;
-  }
-
   .role {
     height: 210vh;
   }
@@ -760,14 +646,8 @@ main {
     display: none;
   }
 
-  .now,
-  .future,
   .contact {
     padding-block: var(--space-8);
-  }
-
-  .now-list {
-    width: min(100%, 18rem);
   }
 
   .pin {
@@ -799,7 +679,6 @@ main {
   .hero-frame,
   .hero-title,
   .scroll-cue,
-  .statement,
   .chain {
     transform: none !important;
     filter: none !important;
@@ -812,7 +691,6 @@ main {
     animation: none !important;
   }
 
-  .identity,
   .role,
   .domains,
   .think {
@@ -830,7 +708,6 @@ main {
     gap: var(--space-5);
   }
 
-  .verb-stage,
   .role-stage,
   .domain-stage {
     position: static;
@@ -840,7 +717,6 @@ main {
     place-items: center;
   }
 
-  .verb,
   .role-line,
   .domain {
     position: static;
