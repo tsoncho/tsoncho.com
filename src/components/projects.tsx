@@ -12,7 +12,7 @@ export function Projects() {
         >
           <div className="frame projects-frame">
             <h1 id="projects-title" className="type-xl projects-title">
-              Soon
+              Available soon
             </h1>
           </div>
           <p className="page-foot">Tsoncho © 2026</p>

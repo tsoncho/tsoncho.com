@@ -3,7 +3,7 @@ import { Projects } from "@/components/projects";
 
 export const metadata: Metadata = {
   title: "Projects",
-  description: "Projects — coming soon.",
+  description: "Projects — available soon.",
 };
 
 export default function ProjectsPage() {
