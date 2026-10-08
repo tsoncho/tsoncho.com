@@ -276,7 +276,8 @@ a {
   transition: color 0.3s var(--ease);
 }
 
-.topbar nav a:hover {
+.topbar nav a:hover,
+.topbar nav a[aria-current="page"] {
   color: var(--fg);
 }
 
@@ -573,6 +574,18 @@ main {
   margin-inline: auto;
 }
 
+/* Projects ---------------------------------------------------------------- */
+
+.projects-frame {
+  gap: 0;
+}
+
+.projects-title {
+  font-weight: 450;
+  opacity: 0;
+  animation: hero-rise 1s var(--ease) 0.15s both;
+}
+
 /* Contact ----------------------------------------------------------------- */
 
 .contact-frame {
@@ -682,6 +695,7 @@ html[data-theme="light"] .copy-mail-label {
   .hero-frame,
   .hero-title,
   .hero-word,
+  .projects-title,
   .scroll-cue {
     transform: none !important;
     filter: none !important;

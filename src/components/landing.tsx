@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SiteChrome } from "@/components/site-chrome";
 
 const EMAIL = "terziiskitsoncho@gmail.com";
-const THEME_KEY = "theme";
 const ROUTES = ["/", "/explore", "/contact"] as const;
 
-type Theme = "light" | "dark";
 type PanelPath = (typeof ROUTES)[number];
 
 const domains = [
@@ -50,35 +48,14 @@ function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function systemTheme(): Theme {
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-}
-
-function readStoredTheme(): Theme | null {
-  try {
-    const stored = localStorage.getItem(THEME_KEY);
-    return stored === "light" || stored === "dark" ? stored : null;
-  } catch {
-    return null;
-  }
-}
-
-function applyTheme(theme: Theme) {
-  document.documentElement.dataset.theme = theme;
-}
-
 export function Landing() {
   const pathname = usePathname() || "/";
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [domainIndex, setDomainIndex] = useState(0);
-  const [theme, setTheme] = useState<Theme>("dark");
   const domainIndexRef = useRef(0);
   const copyTimer = useRef<number | null>(null);
-  const themeLocked = useRef(false);
   const goToRef = useRef<(index: number, instant?: boolean) => void>(() => {});
   const routerRef = useRef(router);
   const pathRef = useRef(pathname);
@@ -86,18 +63,6 @@ export function Landing() {
 
   routerRef.current = router;
   pathRef.current = pathname;
-
-  function toggleTheme() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    themeLocked.current = true;
-    applyTheme(next);
-    setTheme(next);
-    try {
-      localStorage.setItem(THEME_KEY, next);
-    } catch {
-      /* ignore */
-    }
-  }
 
   async function copyEmail() {
     try {
@@ -127,25 +92,6 @@ export function Landing() {
     return () => {
       if (copyTimer.current) window.clearTimeout(copyTimer.current);
     };
-  }, []);
-
-  useEffect(() => {
-    const stored = readStoredTheme();
-    themeLocked.current = stored !== null;
-    const initial = stored ?? systemTheme();
-    applyTheme(initial);
-    setTheme(initial);
-
-    const media = window.matchMedia("(prefers-color-scheme: light)");
-    const onSystem = () => {
-      if (themeLocked.current) return;
-      const next = systemTheme();
-      applyTheme(next);
-      setTheme(next);
-    };
-
-    media.addEventListener("change", onSystem);
-    return () => media.removeEventListener("change", onSystem);
   }, []);
 
   useEffect(() => {
@@ -272,7 +218,6 @@ export function Landing() {
       const panel = activeIndex();
       const domain = domainIndexRef.current;
 
-      // Explore panel: advance domains in place before leaving the section.
       if (panel === 1) {
         if (direction === 1 && domain < lastDomain) {
           lockBriefly();
@@ -375,77 +320,12 @@ export function Landing() {
   }
 
   return (
-    <div className="page" ref={rootRef}>
-      <div className="atmosphere" aria-hidden="true">
-        <div className="atm-plane atm-a" />
-        <div className="atm-plane atm-b" />
-        <div className="atm-glow" />
-        <div className="atm-grain" />
-      </div>
-
-      <header className="topbar">
-        <Link
-          className="brand"
-          href="/"
-          scroll={false}
-          onClick={() => openPanel(0)}
-        >
-          Tsoncho
-        </Link>
-        <div className="topbar-end">
-          <nav aria-label="Page">
-            <Link href="/explore" scroll={false} onClick={() => openPanel(1)}>
-              Explore
-            </Link>
-            <Link href="/contact" scroll={false} onClick={() => openPanel(2)}>
-              Contact
-            </Link>
-          </nav>
-          <button
-            className="theme-toggle"
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-          >
-            {theme === "dark" ? (
-              <svg
-                className="theme-icon"
-                viewBox="0 0 24 24"
-                width="15"
-                height="15"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="theme-icon"
-                viewBox="0 0 24 24"
-                width="15"
-                height="15"
-                aria-hidden="true"
-              >
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20.2 13.6A7.8 7.8 0 0 1 10.4 3.8 7.4 7.4 0 1 0 20.2 13.6Z"
-                />
-              </svg>
-            )}
-          </button>
-        </div>
-      </header>
-
+    <SiteChrome
+      rootRef={rootRef}
+      onHome={() => openPanel(0)}
+      onExplore={() => openPanel(1)}
+      onContact={() => openPanel(2)}
+    >
       <main className="deck">
         <section
           className="panel hero"
@@ -514,6 +394,6 @@ export function Landing() {
           <p className="page-foot">Tsoncho © 2026</p>
         </section>
       </main>
-    </div>
+    </SiteChrome>
   );
 }
