@@ -198,6 +198,10 @@ export function Landing() {
       hero.removeAttribute("data-scrolled");
     };
 
+    const restAtmosphere = () => {
+      root.style.setProperty("--page", "0");
+    };
+
     const goTo = (index: number, instant = false) => {
       const list = panels();
       const next = Math.min(list.length - 1, Math.max(0, index));
@@ -214,6 +218,7 @@ export function Landing() {
         if (instant || reduced) {
           window.scrollTo(0, panelTop(HOME));
           freezeHero();
+          restAtmosphere();
           pinHero = false;
           lockedRef.current = false;
           enableSnap(true);
@@ -223,6 +228,7 @@ export function Landing() {
         lockTimer = window.setTimeout(() => {
           alignPanel(HOME);
           freezeHero();
+          restAtmosphere();
           pinHero = false;
           lockedRef.current = false;
           enableSnap(true);
@@ -253,22 +259,31 @@ export function Landing() {
       frame = 0;
       const vh = window.innerHeight || 1;
       const max = Math.max(1, document.documentElement.scrollHeight - vh);
-      root.style.setProperty("--page", (window.scrollY / max).toFixed(4));
-
       const index = activeIndex();
       const hero = root.querySelector<HTMLElement>("[data-hero]");
+      const heroTop = hero?.getBoundingClientRect().top ?? 0;
+      const nearHome = index === HOME && Math.abs(heroTop) < 10;
+
+      // Atmosphere tracks scroll live; only hard-rest when settled on the hero.
+      if (nearHome && !pinHero) {
+        restAtmosphere();
+      } else {
+        root.style.setProperty(
+          "--page",
+          (window.scrollY / max).toFixed(4),
+        );
+      }
+
       if (hero) {
-        const rect = hero.getBoundingClientRect();
-        const nearHome = Math.abs(rect.top) < 10;
         // Parallax only while leaving the hero — never while returning/settling.
         const leaving =
-          index === 0 &&
+          index === HOME &&
           !nearHome &&
           !pinHero &&
-          urlIndexRef.current === 0 &&
+          urlIndexRef.current === HOME &&
           !lockedRef.current;
         const local = leaving
-          ? Math.min(1, Math.max(0, -rect.top / Math.max(1, vh * 0.55)))
+          ? Math.min(1, Math.max(0, -heroTop / Math.max(1, vh * 0.55)))
           : 0;
         hero.style.setProperty("--h", local.toFixed(4));
         if (local > 0.08) hero.setAttribute("data-scrolled", "");
@@ -290,10 +305,10 @@ export function Landing() {
         alignPanel(EXPLORE);
         return;
       }
+      // While returning home, keep measuring so atmosphere eases with scroll
+      // instead of freezing mid-trip and popping at the end.
       if (pinHero) {
-        alignPanel(0);
         freezeHero();
-        return;
       }
       if (frame) return;
       frame = requestAnimationFrame(measure);
