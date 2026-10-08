@@ -15,6 +15,7 @@ function prefersReduced() {
 export function Experience() {
   const [phase, setPhase] = useState<Phase>("film");
   const [still, setStill] = useState(false);
+  const [ended, setEnded] = useState(false);
   const [playId, setPlayId] = useState(0);
 
   useLayoutEffect(() => {
@@ -24,19 +25,26 @@ export function Experience() {
       window.getSelection()?.removeAllRanges();
       return;
     }
-    if (prefersReduced()) setStill(true);
+    if (prefersReduced()) {
+      setStill(true);
+      setEnded(true);
+    }
   }, [phase]);
 
   useEffect(() => {
-    if (phase !== "film" || !still) return;
+    if (!ended || phase !== "film") return;
     document.querySelector<HTMLButtonElement>(".explore")?.focus();
-  }, [phase, still, playId]);
+  }, [ended, phase, playId]);
 
   function replay() {
     setPlayId((id) => id + 1);
+    setEnded(false);
     setStill(false);
     setPhase("film");
-    if (prefersReduced()) setStill(true);
+    if (prefersReduced()) {
+      setStill(true);
+      setEnded(true);
+    }
   }
 
   if (phase === "site") {
@@ -47,7 +55,14 @@ export function Experience() {
     <>
       <PointerField />
       <Scene key={`scene-${playId}`} />
-      <Film key={`film-${playId}`} still={still} onExplore={() => setPhase("site")} />
+      <Film
+        key={`film-${playId}`}
+        still={still}
+        ended={ended}
+        onEnded={() => setEnded(true)}
+        onSkip={() => setPhase("site")}
+        onExplore={() => setPhase("site")}
+      />
     </>
   );
 }
