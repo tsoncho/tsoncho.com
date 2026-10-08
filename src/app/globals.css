@@ -342,9 +342,33 @@ main {
   margin-bottom: var(--space-4);
 }
 
+.hero-label {
+  animation: hero-rise 0.9s var(--ease) 0.05s both;
+}
+
 .hero-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.28em;
+  row-gap: 0.05em;
+  max-width: 14ch;
+  font-size: clamp(2.8rem, 9.5vw, 6.75rem);
   transform-origin: center;
   transform: scale(calc(1 - var(--h, 0) * 0.08));
+}
+
+.hero-word {
+  display: inline-block;
+  clip-path: inset(0 48% 0 48%);
+  opacity: 0;
+  transform: translateY(0.65rem) scale(1.05);
+  filter: blur(6px);
+  animation: hero-name 1.15s var(--ease) both;
+}
+
+.hero-word:nth-child(2) {
+  animation-delay: 0.16s;
 }
 
 .hero-kicker {
@@ -356,6 +380,27 @@ main {
   letter-spacing: -0.015em;
   word-spacing: 0.18em;
   line-height: 1.45;
+  animation: hero-rise 1s var(--ease) 0.55s both;
+}
+
+@keyframes hero-name {
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.55rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .scroll-cue {
@@ -366,6 +411,7 @@ main {
   color: var(--quiet);
   transform: translateX(-50%);
   opacity: calc(0.8 - var(--h, 0) * 1.1);
+  animation: hero-rise 1s var(--ease) 0.9s both;
 }
 
 .scroll-cue::after {
@@ -612,10 +658,14 @@ main {
   .atm-glow,
   .hero-frame,
   .hero-title,
+  .hero-word,
+  .hero-label,
+  .hero-kicker,
   .scroll-cue {
     transform: none !important;
     filter: none !important;
     opacity: 1 !important;
+    clip-path: none !important;
     animation: none !important;
   }
 

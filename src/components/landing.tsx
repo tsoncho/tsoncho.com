@@ -100,9 +100,10 @@ export function Landing() {
       <main>
         <section id="top" className="hero" data-hero aria-labelledby="hero-title">
           <div className="frame hero-frame">
-            <p className="label">Bulgaria</p>
+            <p className="label hero-label">Bulgaria</p>
             <h1 id="hero-title" className="type-xl hero-title">
-              Tsoncho
+              <span className="hero-word">Tsoncho</span>
+              <span className="hero-word">Terziyski</span>
             </h1>
             <p className="hero-kicker">
               Student. Software Specialist. Entrepreneur.
