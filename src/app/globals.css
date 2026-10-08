@@ -315,10 +315,6 @@ main {
   padding-block: var(--space-5);
 }
 
-.pin .label {
-  margin-bottom: var(--space-5);
-}
-
 /* Hero -------------------------------------------------------------------- */
 
 .hero {
@@ -501,10 +497,6 @@ main {
   place-items: center;
   padding: var(--space-9) var(--gutter) var(--space-7);
   box-sizing: border-box;
-}
-
-.contact-frame .label {
-  margin-bottom: var(--space-4);
 }
 
 .contact-title {

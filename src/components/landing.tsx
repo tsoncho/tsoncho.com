@@ -118,7 +118,6 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">01 — Explore</p>
               <h2 id="domains-title" className="sr-only">
                 What I do
               </h2>
@@ -136,7 +135,6 @@ export function Landing() {
 
         <section id="contact" className="band contact" aria-labelledby="contact-title">
           <div className="frame contact-frame">
-            <p className="label">02 — Contact</p>
             <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>
