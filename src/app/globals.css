@@ -495,55 +495,6 @@ main {
   margin-inline: auto;
 }
 
-/* Think ------------------------------------------------------------------- */
-
-.think {
-  height: 150vh;
-}
-
-.chain {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: var(--space-2) var(--space-3);
-  max-width: 48rem;
-  margin-inline: auto;
-  transform: translate3d(0, calc((1 - var(--p)) * 5vh), 0);
-  opacity: calc(0.4 + var(--p) * 0.6);
-}
-
-.chain-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.chain-arrow {
-  color: var(--accent);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: clamp(1rem, 2.4vw, 1.5rem);
-  transform: translateY(-0.1em);
-  animation: arrow 2.8s var(--ease) infinite;
-}
-
-@keyframes arrow {
-  0%,
-  100% {
-    transform: translate3d(0, -0.1em, 0);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translate3d(0.2rem, -0.1em, 0);
-    opacity: 1;
-  }
-}
-
-.chain-caption {
-  margin-top: var(--space-5);
-  opacity: calc(var(--p) * 1.15);
-}
-
 /* Contact ----------------------------------------------------------------- */
 
 .contact {
@@ -636,19 +587,6 @@ main {
     height: 260vh;
   }
 
-  .think {
-    height: 130vh;
-  }
-
-  .chain {
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .chain-arrow {
-    display: none;
-  }
-
   .contact {
     padding-block: var(--space-8);
   }
@@ -681,22 +619,19 @@ main {
   .atm-glow,
   .hero-frame,
   .hero-title,
-  .scroll-cue,
-  .chain {
+  .scroll-cue {
     transform: none !important;
     filter: none !important;
     opacity: 1 !important;
     animation: none !important;
   }
 
-  .scroll-cue::after,
-  .chain-arrow {
+  .scroll-cue::after {
     animation: none !important;
   }
 
   .role,
-  .domains,
-  .think {
+  .domains {
     height: auto;
   }
 

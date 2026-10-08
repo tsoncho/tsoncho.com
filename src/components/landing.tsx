@@ -21,8 +21,6 @@ const domains = [
   },
 ] as const;
 
-const verbs = ["Learn", "Create", "Automate", "Improve"] as const;
-
 function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -167,39 +165,9 @@ export function Landing() {
           </div>
         </section>
 
-        <section
-          className="band think"
-          data-track
-          data-stages="1"
-          aria-labelledby="think-title"
-        >
-          <div className="pin">
-            <div className="frame">
-              <p className="label">03 — System</p>
-              <h2 id="think-title" className="sr-only">
-                How I think
-              </h2>
-              <div className="chain" aria-hidden="true">
-                {verbs.map((verb, index) => (
-                  <span key={verb} className="chain-item">
-                    <span className="type-md chain-word">{verb}</span>
-                    {index < verbs.length - 1 ? (
-                      <span className="chain-arrow" aria-hidden="true">
-                        →
-                      </span>
-                    ) : null}
-                  </span>
-                ))}
-              </div>
-              <p className="label chain-caption">A continuous loop.</p>
-              <p className="sr-only">Learn, create, automate, improve.</p>
-            </div>
-          </div>
-        </section>
-
         <section id="contact" className="band contact" aria-labelledby="contact-title">
           <div className="frame contact-frame">
-            <p className="label">04 — Contact</p>
+            <p className="label">03 — Contact</p>
             <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>
@@ -207,15 +175,6 @@ export function Landing() {
               <li>
                 <a href="mailto:terziiskitsoncho@gmail.com">
                   Email <span aria-hidden="true">→</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.linkedin.com/in/tsoncho"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LinkedIn <span aria-hidden="true">→</span>
                 </a>
               </li>
               <li>
