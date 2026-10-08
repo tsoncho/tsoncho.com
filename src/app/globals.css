@@ -201,7 +201,7 @@ a {
 .topbar nav a,
 .label,
 .scroll-cue,
-.contact-links,
+.copy-mail,
 .page-foot {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--text-label);
@@ -503,37 +503,49 @@ main {
   font-weight: 450;
 }
 
-.contact-links {
-  list-style: none;
-  margin: var(--space-6) 0 0;
-  padding: 0;
+.copy-mail {
+  appearance: none;
   display: grid;
   justify-items: center;
-  gap: var(--space-4);
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition: color 0.3s var(--ease);
 }
 
-.contact-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--fg);
-  border-bottom: 1px solid transparent;
+.copy-mail-label {
+  color: var(--accent);
+  border-bottom: 1px solid rgba(103, 104, 255, 0.35);
+  padding-bottom: 0.15rem;
   transition:
     color 0.3s var(--ease),
     border-color 0.3s var(--ease);
 }
 
-.contact-links a span {
-  color: var(--accent);
-  transition: transform 0.3s var(--ease);
+.copy-mail-address {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  transition: color 0.3s var(--ease);
 }
 
-.contact-links a:hover {
-  border-color: rgba(103, 104, 255, 0.5);
+.copy-mail:hover .copy-mail-label,
+.copy-mail:focus-visible .copy-mail-label {
+  border-color: var(--accent);
 }
 
-.contact-links a:hover span {
-  transform: translateX(0.2rem);
+.copy-mail.is-copied .copy-mail-label {
+  color: var(--fg);
+  border-color: rgba(244, 240, 230, 0.35);
+}
+
+.copy-mail.is-copied .copy-mail-address {
+  color: var(--fg);
 }
 
 .page-foot {

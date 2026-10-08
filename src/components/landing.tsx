@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const EMAIL = "terziiskitsoncho@gmail.com";
 
 const domains = [
   {
@@ -27,6 +29,34 @@ function prefersReduced() {
 
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+  const copyTimer = useRef<number | null>(null);
+
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = EMAIL;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand("copy");
+      document.body.removeChild(field);
+    }
+
+    setCopied(true);
+    if (copyTimer.current) window.clearTimeout(copyTimer.current);
+    copyTimer.current = window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (copyTimer.current) window.clearTimeout(copyTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -138,18 +168,17 @@ export function Landing() {
             <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>
-            <ul className="contact-links">
-              <li>
-                <a href="mailto:terziiskitsoncho@gmail.com">
-                  Email <span aria-hidden="true">→</span>
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/tsoncho" target="_blank" rel="noreferrer">
-                  GitHub <span aria-hidden="true">→</span>
-                </a>
-              </li>
-            </ul>
+            <button
+              className={`copy-mail${copied ? " is-copied" : ""}`}
+              type="button"
+              onClick={copyEmail}
+              aria-live="polite"
+            >
+              <span className="copy-mail-label">
+                {copied ? "Copied" : "Email"}
+              </span>
+              <span className="copy-mail-address">{EMAIL}</span>
+            </button>
           </div>
         </section>
       </main>
