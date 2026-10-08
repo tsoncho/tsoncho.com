@@ -124,7 +124,7 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">01 — Role</p>
+              <p className="label">01 — Work</p>
               <div className="role-stage">
                 <h2 id="role-title" className="type-md role-line" data-i="0">
                   Junior Software Specialist
