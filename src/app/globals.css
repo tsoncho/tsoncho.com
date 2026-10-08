@@ -338,14 +338,6 @@ main {
   opacity: calc(1 - var(--h, 0) * 0.45);
 }
 
-.hero-frame .label {
-  margin-bottom: var(--space-4);
-}
-
-.hero-label {
-  animation: hero-rise 0.9s var(--ease) 0.05s both;
-}
-
 .hero-title {
   display: flex;
   flex-wrap: wrap;
@@ -371,18 +363,6 @@ main {
 .hero-word--last {
   color: color-mix(in srgb, var(--fg) 92%, var(--accent));
   animation: hero-fade-in 1.15s var(--ease) 0.95s both;
-}
-
-.hero-kicker {
-  margin: var(--space-4) 0 0;
-  max-width: 36rem;
-  color: var(--muted);
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  word-spacing: 0.18em;
-  line-height: 1.45;
-  animation: hero-rise 0.95s var(--ease) 1.55s both;
 }
 
 @keyframes hero-side-in {
@@ -438,7 +418,7 @@ main {
   color: var(--quiet);
   transform: translateX(-50%);
   opacity: calc(0.8 - var(--h, 0) * 1.1);
-  animation: hero-rise 1s var(--ease) 1.85s both;
+  animation: hero-rise 1s var(--ease) 1.55s both;
 }
 
 .scroll-cue::after {
@@ -640,11 +620,6 @@ main {
     gap: var(--space-3);
   }
 
-  .hero-kicker {
-    margin-top: var(--space-3);
-    font-size: clamp(0.95rem, 3.8vw, 1.1rem);
-  }
-
   .role {
     height: 210vh;
   }
@@ -686,8 +661,6 @@ main {
   .hero-frame,
   .hero-title,
   .hero-word,
-  .hero-label,
-  .hero-kicker,
   .scroll-cue {
     transform: none !important;
     filter: none !important;
