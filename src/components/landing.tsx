@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 const EMAIL = "terziiskitsoncho@gmail.com";
+const THEME_KEY = "theme";
+
+type Theme = "light" | "dark";
 
 const domains = [
   {
@@ -26,12 +29,45 @@ function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function systemTheme(): Theme {
+  return window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+}
+
+function readStoredTheme(): Theme | null {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    return stored === "light" || stored === "dark" ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+function applyTheme(theme: Theme) {
+  document.documentElement.dataset.theme = theme;
+}
+
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [domainIndex, setDomainIndex] = useState(0);
+  const [theme, setTheme] = useState<Theme>("dark");
   const domainIndexRef = useRef(0);
   const copyTimer = useRef<number | null>(null);
+  const themeLocked = useRef(false);
+
+  function toggleTheme() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    themeLocked.current = true;
+    applyTheme(next);
+    setTheme(next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* ignore */
+    }
+  }
 
   async function copyEmail() {
     try {
@@ -61,6 +97,25 @@ export function Landing() {
     return () => {
       if (copyTimer.current) window.clearTimeout(copyTimer.current);
     };
+  }, []);
+
+  useEffect(() => {
+    const stored = readStoredTheme();
+    themeLocked.current = stored !== null;
+    const initial = stored ?? systemTheme();
+    applyTheme(initial);
+    setTheme(initial);
+
+    const media = window.matchMedia("(prefers-color-scheme: light)");
+    const onSystem = () => {
+      if (themeLocked.current) return;
+      const next = systemTheme();
+      applyTheme(next);
+      setTheme(next);
+    };
+
+    media.addEventListener("change", onSystem);
+    return () => media.removeEventListener("change", onSystem);
   }, []);
 
   useEffect(() => {
@@ -263,10 +318,20 @@ export function Landing() {
         <a className="brand" href="#top">
           Tsoncho
         </a>
-        <nav aria-label="Page">
-          <a href="#explore">Explore</a>
-          <a href="#contact">Contact</a>
-        </nav>
+        <div className="topbar-end">
+          <nav aria-label="Page">
+            <a href="#explore">Explore</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <button
+            className="theme-toggle"
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+          >
+            {theme === "dark" ? "Light" : "Dark"}
+          </button>
+        </div>
       </header>
 
       <main className="deck">
