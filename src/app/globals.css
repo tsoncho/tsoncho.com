@@ -474,8 +474,7 @@ main {
 }
 
 .role[data-stage="0"] .role-line[data-i="0"],
-.role[data-stage="1"] .role-line[data-i="1"],
-.role[data-stage="2"] .role-line[data-i="2"] {
+.role[data-stage="1"] .role-line[data-i="1"] {
   opacity: 1;
   transform: none;
   filter: blur(0);
@@ -488,11 +487,6 @@ main {
 .role-secondary {
   color: var(--accent);
   font-weight: var(--weight-display);
-}
-
-.role-support {
-  font-weight: 450;
-  letter-spacing: -0.02em;
 }
 
 /* Domains ----------------------------------------------------------------- */

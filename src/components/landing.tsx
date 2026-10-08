@@ -114,7 +114,7 @@ export function Landing() {
           id="work"
           className="band role"
           data-track
-          data-stages="3"
+          data-stages="2"
           aria-labelledby="role-title"
         >
           <div className="pin">
@@ -126,9 +126,6 @@ export function Landing() {
                 </h2>
                 <p className="type-md role-line role-secondary" data-i="1">
                   ATM &amp; POS
-                </p>
-                <p className="type-md role-line role-support" data-i="2">
-                  Early in. Already moving.
                 </p>
               </div>
             </div>
