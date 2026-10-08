@@ -342,12 +342,7 @@ export function Landing() {
   }
 
   return (
-    <SiteChrome
-      rootRef={rootRef}
-      onHome={() => openPanel(0)}
-      onExplore={() => openPanel(1)}
-      onContact={() => openPanel(2)}
-    >
+    <SiteChrome rootRef={rootRef} onHome={() => openPanel(0)}>
       <main className="deck">
         <section
           className="panel hero"

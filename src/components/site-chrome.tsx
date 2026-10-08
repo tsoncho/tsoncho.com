@@ -9,8 +9,6 @@ type SiteChromeProps = {
   children: ReactNode;
   rootRef?: React.RefObject<HTMLDivElement | null>;
   onHome?: () => void;
-  onExplore?: () => void;
-  onContact?: () => void;
 };
 
 function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
@@ -62,13 +60,7 @@ function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
   );
 }
 
-export function SiteChrome({
-  children,
-  rootRef,
-  onHome,
-  onExplore,
-  onContact,
-}: SiteChromeProps) {
+export function SiteChrome({ children, rootRef, onHome }: SiteChromeProps) {
   const pathname = usePathname() || "/";
   const { theme, toggleTheme } = useTheme();
   const deck = !pathname.startsWith("/projects");
@@ -99,36 +91,10 @@ export function SiteChrome({
         <div className="topbar-end">
           <nav aria-label="Page">
             <Link
-              href="/explore"
-              scroll={false}
-              onClick={(event) => {
-                if (deck && onExplore) {
-                  event.preventDefault();
-                  onExplore();
-                }
-              }}
-              aria-current={pathname.startsWith("/explore") ? "page" : undefined}
-            >
-              Explore
-            </Link>
-            <Link
               href="/projects"
               aria-current={pathname.startsWith("/projects") ? "page" : undefined}
             >
               Projects
-            </Link>
-            <Link
-              href="/contact"
-              scroll={false}
-              onClick={(event) => {
-                if (deck && onContact) {
-                  event.preventDefault();
-                  onContact();
-                }
-              }}
-              aria-current={pathname.startsWith("/contact") ? "page" : undefined}
-            >
-              Contact
             </Link>
           </nav>
           <button
