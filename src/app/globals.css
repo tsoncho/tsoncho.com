@@ -4,9 +4,10 @@
 
 :root {
   --bg: #0c0d0f;
-  --fg: #f4f0e6;
-  --muted: #b4afa5;
-  --quiet: #85817a;
+  --bg-light: #f4f0e6;
+  --fg: #ffffff;
+  --muted: #c8c4ba;
+  --quiet: #9a968c;
   --accent: #6768ff;
   --page: 0;
 
@@ -59,7 +60,11 @@
 }
 
 html {
-  background: var(--bg);
+  background: linear-gradient(
+    to right,
+    var(--bg-light) 0 50%,
+    var(--bg) 50% 100%
+  );
   color-scheme: dark;
   overflow-x: clip;
   height: 100%;
@@ -74,7 +79,7 @@ html[data-deck="snap"] {
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--bg);
+  background: transparent;
   color: var(--fg);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--text-body);
@@ -133,34 +138,49 @@ a {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(24, 26, 48, 0.5), transparent 70%),
-    radial-gradient(ellipse 50% 35% at 50% 40%, rgba(103, 104, 255, 0.07), transparent 60%),
-    var(--bg);
+  background: linear-gradient(
+    to right,
+    var(--bg-light) 0 50%,
+    var(--bg) 50% 100%
+  );
+}
+
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.55;
+  transform: translateX(-50%);
 }
 
 .atm-plane {
   position: absolute;
   inset: -18%;
-  opacity: 0.45;
+  opacity: 0.35;
   will-change: transform;
 }
 
 .atm-a {
+  clip-path: inset(0 50% 0 0);
   background: linear-gradient(
     118deg,
     transparent 44%,
-    rgba(103, 104, 255, 0.16) 50%,
+    rgba(12, 13, 15, 0.08) 50%,
     transparent 56%
   );
   transform: translate3d(calc(var(--page) * -5%), calc(var(--page) * 3%), 0) rotate(-7deg);
 }
 
 .atm-b {
+  clip-path: inset(0 0 0 50%);
   background: linear-gradient(
     250deg,
     transparent 38%,
-    rgba(18, 22, 48, 0.3) 52%,
+    rgba(103, 104, 255, 0.14) 52%,
     transparent 68%
   );
   transform: translate3d(calc(var(--page) * 4%), calc(var(--page) * -2%), 0) rotate(5deg);
@@ -169,21 +189,21 @@ a {
 .atm-glow {
   position: absolute;
   top: 12%;
-  left: 50%;
-  width: min(36rem, 64vw);
-  height: min(36rem, 64vw);
+  left: 75%;
+  width: min(28rem, 48vw);
+  height: min(28rem, 48vw);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(103, 104, 255, 0.2), transparent 68%);
+  background: radial-gradient(circle, rgba(103, 104, 255, 0.22), transparent 68%);
   filter: blur(32px);
   transform: translate3d(-50%, calc(var(--page) * 90%), 0) scale(calc(1 - var(--page) * 0.28));
-  opacity: calc(0.85 - var(--page) * 0.5);
+  opacity: calc(0.75 - var(--page) * 0.45);
 }
 
 .atm-grain {
   position: absolute;
   inset: -20%;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
   background-image: url("/grain.svg");
   background-size: 180px 180px;
 }
@@ -232,12 +252,17 @@ a {
 }
 
 .topbar nav a {
-  color: var(--quiet);
+  color: rgba(255, 255, 255, 0.62);
   transition: color 0.3s var(--ease);
 }
 
 .topbar nav a:hover {
   color: var(--fg);
+}
+
+.topbar,
+.deck {
+  mix-blend-mode: difference;
 }
 
 /* Type system ------------------------------------------------------------- */
@@ -280,7 +305,7 @@ main {
 .body {
   margin: 0;
   max-width: 42ch;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.72);
   font-size: var(--text-body);
   letter-spacing: var(--track-body);
   line-height: var(--leading-body);
@@ -418,7 +443,7 @@ main {
   z-index: 1;
   margin: 0;
   padding-bottom: var(--space-1);
-  color: var(--quiet);
+  color: rgba(255, 255, 255, 0.62);
   opacity: 0;
   animation: hero-cue-in 0.9s var(--ease) 1.55s both;
 }
@@ -435,7 +460,7 @@ main {
   width: 1px;
   height: clamp(1.25rem, 3.2vh, 1.85rem);
   margin: var(--space-2) auto 0;
-  background: linear-gradient(var(--accent), transparent);
+  background: linear-gradient(#fff, transparent);
   transform-origin: top;
   animation: cue 2.6s var(--ease) 2.4s infinite;
 }
@@ -501,10 +526,7 @@ main {
 
 .domain-word {
   max-width: 12ch;
-}
-
-.domain[data-i="0"] .domain-word {
-  color: var(--accent);
+  color: var(--fg);
 }
 
 .domain-line {
@@ -536,8 +558,8 @@ main {
 }
 
 .copy-mail-label {
-  color: var(--accent);
-  border-bottom: 1px solid rgba(103, 104, 255, 0.35);
+  color: var(--fg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   padding-bottom: 0.15rem;
   transition:
     color 0.3s var(--ease),
@@ -545,7 +567,7 @@ main {
 }
 
 .copy-mail-address {
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: none;
@@ -554,12 +576,12 @@ main {
 
 .copy-mail:hover .copy-mail-label,
 .copy-mail:focus-visible .copy-mail-label {
-  border-color: var(--accent);
+  border-color: #fff;
 }
 
 .copy-mail.is-copied .copy-mail-label {
   color: var(--fg);
-  border-color: rgba(244, 240, 230, 0.35);
+  border-color: rgba(255, 255, 255, 0.55);
 }
 
 .copy-mail.is-copied .copy-mail-address {
@@ -573,7 +595,7 @@ main {
   bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
   margin: 0;
   text-align: center;
-  color: var(--quiet);
+  color: rgba(255, 255, 255, 0.55);
   pointer-events: none;
 }
 
