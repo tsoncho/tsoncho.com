@@ -168,25 +168,39 @@ export function Landing() {
     const panelMs = touch ? 720 : 820;
     const swipeThreshold = touch ? 36 : 42;
 
-    const panels = () =>
-      Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
+    let panelList = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-panel]"),
+    );
+    let heroEl = root.querySelector<HTMLElement>("[data-hero]");
+    let lastPage = "";
+    let lastH = "";
+    let lastPanel = -1;
+
+    const refreshPanels = () => {
+      panelList = Array.from(
+        root.querySelectorAll<HTMLElement>("[data-panel]"),
+      );
+      heroEl = root.querySelector<HTMLElement>("[data-hero]");
+    };
+
+    const panels = () => panelList;
 
     const activeIndex = () => {
-      const list = panels();
+      const list = panelList;
       let best = 0;
       let bestDist = Number.POSITIVE_INFINITY;
-      list.forEach((panel, index) => {
-        const dist = Math.abs(panel.getBoundingClientRect().top);
+      for (let i = 0; i < list.length; i++) {
+        const dist = Math.abs(list[i].getBoundingClientRect().top);
         if (dist < bestDist) {
           bestDist = dist;
-          best = index;
+          best = i;
         }
-      });
+      }
       return best;
     };
 
     const panelTop = (index: number) => {
-      const panel = panels()[index];
+      const panel = panelList[index];
       if (!panel) return window.scrollY;
       return Math.round(window.scrollY + panel.getBoundingClientRect().top);
     };
@@ -196,6 +210,18 @@ export function Landing() {
       if (Math.abs(window.scrollY - y) >= 1) {
         window.scrollTo(0, y);
       }
+    };
+
+    const setPage = (value: string) => {
+      if (value === lastPage) return;
+      lastPage = value;
+      root.style.setProperty("--page", value);
+    };
+
+    const setHeroH = (value: string) => {
+      if (!heroEl || value === lastH) return;
+      lastH = value;
+      heroEl.style.setProperty("--h", value);
     };
 
     const setDeckMode = (mode: "snap" | "free" | "touch") => {
@@ -224,14 +250,13 @@ export function Landing() {
     };
 
     const freezeHero = () => {
-      const hero = root.querySelector<HTMLElement>("[data-hero]");
-      if (!hero) return;
-      hero.style.setProperty("--h", "0");
-      hero.removeAttribute("data-scrolled");
+      if (!heroEl) return;
+      setHeroH("0");
+      heroEl.removeAttribute("data-scrolled");
     };
 
     const restAtmosphere = () => {
-      root.style.setProperty("--page", "0");
+      setPage("0");
     };
 
     const cancelScrollAnim = () => {
@@ -349,17 +374,16 @@ export function Landing() {
       const vh = window.innerHeight || 1;
       const max = Math.max(1, document.documentElement.scrollHeight - vh);
       const index = activeIndex();
-      const hero = root.querySelector<HTMLElement>("[data-hero]");
-      const heroTop = hero?.getBoundingClientRect().top ?? 0;
+      const heroTop = heroEl?.getBoundingClientRect().top ?? 0;
       const nearHome = index === HOME && Math.abs(heroTop) < 10;
 
       if (nearHome && !pinHero) {
         restAtmosphere();
       } else {
-        root.style.setProperty("--page", (window.scrollY / max).toFixed(4));
+        setPage((window.scrollY / max).toFixed(4));
       }
 
-      if (hero) {
+      if (heroEl) {
         const leaving =
           !touch &&
           index === HOME &&
@@ -370,15 +394,18 @@ export function Landing() {
         const local = leaving
           ? Math.min(1, Math.max(0, -heroTop / Math.max(1, vh * 0.55)))
           : 0;
-        hero.style.setProperty("--h", local.toFixed(4));
-        if (local > 0.08) hero.setAttribute("data-scrolled", "");
-        else hero.removeAttribute("data-scrolled");
+        setHeroH(local.toFixed(4));
+        if (local > 0.08) heroEl.setAttribute("data-scrolled", "");
+        else heroEl.removeAttribute("data-scrolled");
       }
 
-      root.dataset.panel = String(index);
-      panels().forEach((panel, i) => {
-        panel.dataset.active = i === index ? "true" : "false";
-      });
+      if (index !== lastPanel) {
+        lastPanel = index;
+        root.dataset.panel = String(index);
+        for (let i = 0; i < panelList.length; i++) {
+          panelList[i].dataset.active = i === index ? "true" : "false";
+        }
+      }
 
       if (!lockedRef.current && index !== urlIndexRef.current) {
         syncUrl(index);
@@ -530,6 +557,7 @@ export function Landing() {
     };
 
     const onViewport = () => {
+      refreshPanels();
       if (lockedRef.current || pinExplore || pinHero) return;
       alignPanel(urlIndexRef.current);
       measure();
@@ -544,18 +572,21 @@ export function Landing() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onViewport);
     window.visualViewport?.addEventListener("resize", onViewport);
-    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    if (!touch) {
+      window.addEventListener("wheel", onWheel, { passive: false });
+    } else {
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd, { passive: true });
+    }
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onViewport);
       window.visualViewport?.removeEventListener("resize", onViewport);
-      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
