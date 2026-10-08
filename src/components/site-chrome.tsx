@@ -86,8 +86,13 @@ export function SiteChrome({
         <Link
           className="brand"
           href="/"
-          scroll={deck ? false : true}
-          onClick={onHome}
+          scroll={false}
+          onClick={(event) => {
+            if (deck && onHome) {
+              event.preventDefault();
+              onHome();
+            }
+          }}
         >
           Tsoncho
         </Link>
@@ -95,8 +100,13 @@ export function SiteChrome({
           <nav aria-label="Page">
             <Link
               href="/explore"
-              scroll={deck ? false : true}
-              onClick={onExplore}
+              scroll={false}
+              onClick={(event) => {
+                if (deck && onExplore) {
+                  event.preventDefault();
+                  onExplore();
+                }
+              }}
               aria-current={pathname.startsWith("/explore") ? "page" : undefined}
             >
               Explore
@@ -109,8 +119,13 @@ export function SiteChrome({
             </Link>
             <Link
               href="/contact"
-              scroll={deck ? false : true}
-              onClick={onContact}
+              scroll={false}
+              onClick={(event) => {
+                if (deck && onContact) {
+                  event.preventDefault();
+                  onContact();
+                }
+              }}
               aria-current={pathname.startsWith("/contact") ? "page" : undefined}
             >
               Contact

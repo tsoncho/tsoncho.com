@@ -60,9 +60,10 @@ export function Landing() {
   const routerRef = useRef(router);
   const pathRef = useRef(pathname);
   const urlIndexRef = useRef(indexFor(pathname));
+  const ignorePathnameRef = useRef(false);
+  const lockedRef = useRef(false);
 
   routerRef.current = router;
-  pathRef.current = pathname;
 
   async function copyEmail() {
     try {
@@ -96,17 +97,29 @@ export function Landing() {
 
   useEffect(() => {
     const legacy = hashToPath(window.location.hash);
-    if (legacy && legacy !== pathRef.current) {
+    if (legacy && legacy !== window.location.pathname) {
+      ignorePathnameRef.current = true;
+      pathRef.current = legacy;
+      urlIndexRef.current = indexFor(legacy);
       routerRef.current.replace(legacy, { scroll: false });
       return;
     }
     if (window.location.hash) {
-      window.history.replaceState(null, "", pathRef.current);
+      window.history.replaceState(null, "", window.location.pathname);
     }
   }, []);
 
   useEffect(() => {
+    pathRef.current = pathname;
+
+    if (ignorePathnameRef.current) {
+      ignorePathnameRef.current = false;
+      urlIndexRef.current = indexFor(pathname);
+      return;
+    }
+
     const target = indexFor(pathname);
+    if (target === urlIndexRef.current) return;
     urlIndexRef.current = target;
     goToRef.current(target, true);
   }, [pathname]);
@@ -120,7 +133,6 @@ export function Landing() {
     document.documentElement.dataset.deck = reduced ? "free" : "snap";
 
     let frame = 0;
-    let locked = false;
     let lockTimer = 0;
     let touchY = 0;
     let touchArmed = false;
@@ -145,12 +157,12 @@ export function Landing() {
 
     const syncUrl = (index: number) => {
       const path = pathFor(index);
-      if (pathRef.current === path) {
-        urlIndexRef.current = index;
-        return;
-      }
       urlIndexRef.current = index;
-      routerRef.current.replace(path, { scroll: false });
+      if (pathRef.current === path) return;
+      ignorePathnameRef.current = true;
+      pathRef.current = path;
+      // replaceState keeps the path in sync without remounting the deck.
+      window.history.replaceState(window.history.state ?? null, "", path);
     };
 
     const goTo = (index: number, instant = false) => {
@@ -194,7 +206,8 @@ export function Landing() {
         panel.dataset.active = i === index ? "true" : "false";
       });
 
-      if (index !== urlIndexRef.current) {
+      // Only sync URL once a panel has settled — never mid-swipe.
+      if (!lockedRef.current && index !== urlIndexRef.current) {
         syncUrl(index);
       }
     };
@@ -205,15 +218,16 @@ export function Landing() {
     };
 
     const lockBriefly = () => {
-      locked = true;
+      lockedRef.current = true;
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
-        locked = false;
+        lockedRef.current = false;
+        measure();
       }, 780);
     };
 
     const step = (direction: 1 | -1) => {
-      if (reduced || locked) return;
+      if (reduced || lockedRef.current) return;
 
       const panel = activeIndex();
       const domain = domainIndexRef.current;
@@ -291,7 +305,11 @@ export function Landing() {
       step(delta > 0 ? 1 : -1);
     };
 
-    goTo(indexFor(pathRef.current), true);
+    const start = indexFor(pathRef.current);
+    urlIndexRef.current = start;
+    if (start !== 0) {
+      goTo(start, true);
+    }
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -316,6 +334,10 @@ export function Landing() {
   }, []);
 
   function openPanel(index: number) {
+    lockedRef.current = true;
+    window.setTimeout(() => {
+      lockedRef.current = false;
+    }, 780);
     goToRef.current(index);
   }
 
