@@ -134,9 +134,13 @@ export function Landing() {
 
     let frame = 0;
     let lockTimer = 0;
+    let quietTimer = 0;
     let touchY = 0;
     let touchArmed = false;
+    let pinExplore = false;
+    let wheelQuietUntil = 0;
     const lastDomain = domains.length - 1;
+    const EXPLORE = 1;
 
     const panels = () =>
       Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
@@ -155,13 +159,33 @@ export function Landing() {
       return best;
     };
 
+    const panelTop = (index: number) => {
+      const panel = panels()[index];
+      if (!panel) return window.scrollY;
+      return Math.round(window.scrollY + panel.getBoundingClientRect().top);
+    };
+
+    const alignPanel = (index: number) => {
+      const y = panelTop(index);
+      if (Math.abs(window.scrollY - y) >= 1) {
+        window.scrollTo(0, y);
+      }
+    };
+
+    const enableSnap = (on: boolean) => {
+      if (reduced) {
+        document.documentElement.dataset.deck = "free";
+        return;
+      }
+      document.documentElement.dataset.deck = on ? "snap" : "free";
+    };
+
     const syncUrl = (index: number) => {
       const path = pathFor(index);
       urlIndexRef.current = index;
       if (pathRef.current === path) return;
       ignorePathnameRef.current = true;
       pathRef.current = path;
-      // replaceState keeps the path in sync without remounting the deck.
       window.history.replaceState(window.history.state ?? null, "", path);
     };
 
@@ -170,11 +194,14 @@ export function Landing() {
       const next = Math.min(list.length - 1, Math.max(0, index));
       const panel = list[next];
       if (!panel) return;
-      panel.scrollIntoView({
-        behavior: instant || reduced ? "auto" : "smooth",
-        block: "start",
-      });
       syncUrl(next);
+      if (instant || reduced) {
+        enableSnap(false);
+        window.scrollTo(0, panelTop(next));
+        enableSnap(true);
+        return;
+      }
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
     goToRef.current = goTo;
@@ -206,24 +233,57 @@ export function Landing() {
         panel.dataset.active = i === index ? "true" : "false";
       });
 
-      // Only sync URL once a panel has settled — never mid-swipe.
       if (!lockedRef.current && index !== urlIndexRef.current) {
         syncUrl(index);
       }
     };
 
     const onScroll = () => {
+      if (pinExplore) {
+        alignPanel(EXPLORE);
+        return;
+      }
       if (frame) return;
       frame = requestAnimationFrame(measure);
     };
 
-    const lockBriefly = () => {
+    const lockBriefly = (ms = 780) => {
       lockedRef.current = true;
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
         lockedRef.current = false;
         measure();
-      }, 780);
+      }, ms);
+    };
+
+    const quietWheel = (ms = 160) => {
+      wheelQuietUntil = performance.now() + ms;
+      window.clearTimeout(quietTimer);
+      quietTimer = window.setTimeout(() => {
+        wheelQuietUntil = 0;
+      }, ms);
+    };
+
+    // Domain crossfade: freeze scroll + snap so nothing drifts after settle.
+    const holdExploreDomain = (nextDomain: number) => {
+      lockedRef.current = true;
+      pinExplore = true;
+      enableSnap(false);
+      alignPanel(EXPLORE);
+      setDomain(nextDomain);
+      alignPanel(EXPLORE);
+      quietWheel(220);
+
+      window.clearTimeout(lockTimer);
+      lockTimer = window.setTimeout(() => {
+        alignPanel(EXPLORE);
+        pinExplore = false;
+        lockedRef.current = false;
+        enableSnap(true);
+        alignPanel(EXPLORE);
+        quietWheel(180);
+        measure();
+      }, 720);
     };
 
     const step = (direction: 1 | -1) => {
@@ -232,15 +292,13 @@ export function Landing() {
       const panel = activeIndex();
       const domain = domainIndexRef.current;
 
-      if (panel === 1) {
+      if (panel === EXPLORE) {
         if (direction === 1 && domain < lastDomain) {
-          lockBriefly();
-          setDomain(domain + 1);
+          holdExploreDomain(domain + 1);
           return;
         }
         if (direction === -1 && domain > 0) {
-          lockBriefly();
-          setDomain(domain - 1);
+          holdExploreDomain(domain - 1);
           return;
         }
       }
@@ -249,7 +307,8 @@ export function Landing() {
       if (nextPanel < 0 || nextPanel > panels().length - 1) return;
 
       lockBriefly();
-      if (nextPanel === 1) {
+      quietWheel(200);
+      if (nextPanel === EXPLORE) {
         setDomain(direction === 1 ? 0 : lastDomain);
       }
       goTo(nextPanel);
@@ -257,8 +316,9 @@ export function Landing() {
 
     const onWheel = (event: WheelEvent) => {
       if (reduced) return;
-      if (Math.abs(event.deltaY) < 8) return;
       event.preventDefault();
+      if (Math.abs(event.deltaY) < 8) return;
+      if (performance.now() < wheelQuietUntil) return;
       step(event.deltaY > 0 ? 1 : -1);
     };
 
@@ -282,16 +342,8 @@ export function Landing() {
 
     const onTouchMove = (event: TouchEvent) => {
       if (reduced || !touchArmed) return;
-      const panel = activeIndex();
-      if (panel !== 1) return;
-
-      const currentY = event.touches[0]?.clientY ?? touchY;
-      const delta = touchY - currentY;
-      const domain = domainIndexRef.current;
-      const canStay =
-        (delta > 12 && domain < lastDomain) || (delta < -12 && domain > 0);
-
-      if (canStay) {
+      // Explore owns the gesture — never let native scroll bleed into snap.
+      if (activeIndex() === EXPLORE || pinExplore) {
         event.preventDefault();
       }
     };
@@ -301,7 +353,10 @@ export function Landing() {
       touchArmed = false;
       const endY = event.changedTouches[0]?.clientY ?? touchY;
       const delta = touchY - endY;
-      if (Math.abs(delta) < 42) return;
+      if (Math.abs(delta) < 42) {
+        if (activeIndex() === EXPLORE) alignPanel(EXPLORE);
+        return;
+      }
       step(delta > 0 ? 1 : -1);
     };
 
@@ -328,6 +383,7 @@ export function Landing() {
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.clearTimeout(lockTimer);
+      window.clearTimeout(quietTimer);
       if (frame) cancelAnimationFrame(frame);
       delete document.documentElement.dataset.deck;
     };

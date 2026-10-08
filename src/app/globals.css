@@ -535,7 +535,9 @@ main {
 .domain-stage {
   position: relative;
   width: 100%;
-  min-height: 12rem;
+  height: clamp(13rem, 32vh, 17rem);
+  overflow: hidden;
+  contain: layout paint;
 }
 
 .domain {
@@ -546,13 +548,14 @@ main {
   align-content: center;
   gap: var(--space-4);
   opacity: 0;
-  transform: translate3d(0, 1.25rem, 0) scale(0.985);
-  filter: blur(5px);
+  transform: translate3d(0, 0.85rem, 0);
+  filter: blur(4px);
   pointer-events: none;
+  will-change: opacity, transform, filter;
   transition:
-    opacity 0.55s var(--ease-move),
-    transform 0.7s var(--ease-move),
-    filter 0.55s var(--ease-move);
+    opacity 0.5s var(--ease-move),
+    transform 0.55s var(--ease-move),
+    filter 0.5s var(--ease-move);
 }
 
 .domain[data-active="true"] {
@@ -719,6 +722,8 @@ html[data-theme="light"] .copy-mail-label {
   .domain-stage {
     display: grid;
     gap: var(--space-5);
-    min-height: 0;
+    height: auto;
+    overflow: visible;
+    contain: none;
   }
 }
