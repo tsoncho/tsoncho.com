@@ -360,15 +360,17 @@ main {
 
 .hero-word {
   display: inline-block;
-  clip-path: inset(0 48% 0 48%);
   opacity: 0;
-  transform: translateY(0.65rem) scale(1.05);
-  filter: blur(6px);
-  animation: hero-name 1.15s var(--ease) both;
+  will-change: transform, opacity, filter;
 }
 
-.hero-word:nth-child(2) {
-  animation-delay: 0.16s;
+.hero-word--first {
+  animation: hero-side-in 1.05s var(--ease) 0.12s both;
+}
+
+.hero-word--last {
+  color: color-mix(in srgb, var(--fg) 92%, var(--accent));
+  animation: hero-fade-in 1.15s var(--ease) 0.95s both;
 }
 
 .hero-kicker {
@@ -380,12 +382,37 @@ main {
   letter-spacing: -0.015em;
   word-spacing: 0.18em;
   line-height: 1.45;
-  animation: hero-rise 1s var(--ease) 0.55s both;
+  animation: hero-rise 0.95s var(--ease) 1.55s both;
 }
 
-@keyframes hero-name {
+@keyframes hero-side-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-1.6rem, 0, 0);
+    filter: blur(8px);
+  }
+  62% {
+    opacity: 1;
+    filter: blur(0);
+  }
   to {
-    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translate3d(1.1rem, 0.15rem, 0);
+    filter: blur(10px);
+  }
+  55% {
+    opacity: 0.55;
+    filter: blur(3px);
+  }
+  to {
     opacity: 1;
     transform: none;
     filter: blur(0);
@@ -411,7 +438,7 @@ main {
   color: var(--quiet);
   transform: translateX(-50%);
   opacity: calc(0.8 - var(--h, 0) * 1.1);
-  animation: hero-rise 1s var(--ease) 0.9s both;
+  animation: hero-rise 1s var(--ease) 1.85s both;
 }
 
 .scroll-cue::after {

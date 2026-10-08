@@ -102,8 +102,8 @@ export function Landing() {
           <div className="frame hero-frame">
             <p className="label hero-label">Bulgaria</p>
             <h1 id="hero-title" className="type-xl hero-title">
-              <span className="hero-word">Tsoncho</span>
-              <span className="hero-word">Terziyski</span>
+              <span className="hero-word hero-word--first">Tsoncho</span>
+              <span className="hero-word hero-word--last">Terziyski</span>
             </h1>
             <p className="hero-kicker">
               Student. Software Specialist. Entrepreneur.
