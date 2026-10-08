@@ -49,9 +49,13 @@ function prefersReduced() {
 }
 
 function isTouchDeck() {
+  // Phones/tablets: own the gesture. Also treat iPad desktop-site mode
+  // (fine pointer + no hover) as touch so snap and swipe never fight.
   return (
     window.matchMedia("(pointer: coarse)").matches ||
-    window.matchMedia("(hover: none)").matches
+    window.matchMedia("(hover: none)").matches ||
+    (navigator.maxTouchPoints > 0 &&
+      window.matchMedia("(max-width: 900px)").matches)
   );
 }
 

@@ -711,9 +711,12 @@ html[data-theme="light"] .copy-mail-label {
   }
 
   .hero-title {
-    font-size: clamp(2.35rem, 11.5vw, 3.25rem);
-    max-width: 10ch;
-    column-gap: 0.22em;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(2.5rem, 12vw, 3.4rem);
+    max-width: none;
+    column-gap: 0;
+    row-gap: 0.02em;
   }
 
   .hero-word {
