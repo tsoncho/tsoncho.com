@@ -29,6 +29,8 @@ function prefersReduced() {
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const [domainIndex, setDomainIndex] = useState(0);
+  const domainIndexRef = useRef(0);
   const copyTimer = useRef<number | null>(null);
 
   async function copyEmail() {
@@ -52,6 +54,10 @@ export function Landing() {
   }
 
   useEffect(() => {
+    domainIndexRef.current = domainIndex;
+  }, [domainIndex]);
+
+  useEffect(() => {
     return () => {
       if (copyTimer.current) window.clearTimeout(copyTimer.current);
     };
@@ -68,7 +74,9 @@ export function Landing() {
     let frame = 0;
     let locked = false;
     let lockTimer = 0;
-    const pointerFine = window.matchMedia("(pointer: fine)").matches;
+    let touchY = 0;
+    let touchArmed = false;
+    const lastDomain = domains.length - 1;
 
     const panels = () =>
       Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
@@ -98,6 +106,12 @@ export function Landing() {
       });
     };
 
+    const setDomain = (index: number) => {
+      const next = Math.min(lastDomain, Math.max(0, index));
+      domainIndexRef.current = next;
+      setDomainIndex(next);
+    };
+
     const measure = () => {
       frame = 0;
       const vh = window.innerHeight || 1;
@@ -125,18 +139,46 @@ export function Landing() {
       frame = requestAnimationFrame(measure);
     };
 
-    const step = (direction: 1 | -1) => {
-      if (reduced || locked) return;
+    const lockBriefly = () => {
       locked = true;
-      goTo(activeIndex() + direction);
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
         locked = false;
-      }, 850);
+      }, 780);
+    };
+
+    const step = (direction: 1 | -1) => {
+      if (reduced || locked) return;
+
+      const panel = activeIndex();
+      const domain = domainIndexRef.current;
+
+      // Explore panel: advance domains in place before leaving the section.
+      if (panel === 1) {
+        if (direction === 1 && domain < lastDomain) {
+          lockBriefly();
+          setDomain(domain + 1);
+          return;
+        }
+        if (direction === -1 && domain > 0) {
+          lockBriefly();
+          setDomain(domain - 1);
+          return;
+        }
+      }
+
+      const nextPanel = panel + direction;
+      if (nextPanel < 0 || nextPanel > panels().length - 1) return;
+
+      lockBriefly();
+      if (nextPanel === 1) {
+        setDomain(direction === 1 ? 0 : lastDomain);
+      }
+      goTo(nextPanel);
     };
 
     const onWheel = (event: WheelEvent) => {
-      if (reduced || !pointerFine) return;
+      if (reduced) return;
       if (Math.abs(event.deltaY) < 8) return;
       event.preventDefault();
       step(event.deltaY > 0 ? 1 : -1);
@@ -155,17 +197,53 @@ export function Landing() {
       }
     };
 
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0;
+      touchArmed = true;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (reduced || !touchArmed) return;
+      const panel = activeIndex();
+      if (panel !== 1) return;
+
+      const currentY = event.touches[0]?.clientY ?? touchY;
+      const delta = touchY - currentY;
+      const domain = domainIndexRef.current;
+      const canStay =
+        (delta > 12 && domain < lastDomain) || (delta < -12 && domain > 0);
+
+      if (canStay) {
+        event.preventDefault();
+      }
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (reduced || !touchArmed) return;
+      touchArmed = false;
+      const endY = event.changedTouches[0]?.clientY ?? touchY;
+      const delta = touchY - endY;
+      if (Math.abs(delta) < 42) return;
+      step(delta > 0 ? 1 : -1);
+    };
+
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.clearTimeout(lockTimer);
       if (frame) cancelAnimationFrame(frame);
       delete document.documentElement.dataset.deck;
@@ -210,25 +288,32 @@ export function Landing() {
           </p>
         </section>
 
-        <h2 id="domains-title" className="sr-only">
-          What I do
-        </h2>
-
-        {domains.map((domain, index) => (
-          <section
-            key={domain.id}
-            id={index === 0 ? "explore" : domain.id}
-            className="panel domain-panel"
-            data-panel
-            data-domain={domain.id}
-            aria-label={domain.word}
-          >
-            <div className="frame domain-frame">
-              <p className="type-lg domain-word">{domain.word}</p>
-              <p className="body domain-line">{domain.line}</p>
+        <section
+          id="explore"
+          className="panel explore"
+          data-panel
+          data-stage={domainIndex}
+          aria-labelledby="domains-title"
+        >
+          <div className="frame explore-frame">
+            <h2 id="domains-title" className="sr-only">
+              What I do
+            </h2>
+            <div className="domain-stage">
+              {domains.map((domain, index) => (
+                <article
+                  key={domain.id}
+                  className="domain"
+                  data-i={index}
+                  data-active={domainIndex === index ? "true" : "false"}
+                >
+                  <p className="type-lg domain-word">{domain.word}</p>
+                  <p className="body domain-line">{domain.line}</p>
+                </article>
+              ))}
             </div>
-          </section>
-        ))}
+          </div>
+        </section>
 
         <section
           id="contact"
