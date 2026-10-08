@@ -336,8 +336,8 @@ export function Landing() {
               </span>
               <span className="copy-mail-address">{EMAIL}</span>
             </button>
-            <p className="page-foot">Tsoncho © 2026</p>
           </div>
+          <p className="page-foot">Tsoncho © 2026</p>
         </section>
       </main>
     </div>

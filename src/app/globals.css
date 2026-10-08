@@ -567,8 +567,14 @@ main {
 }
 
 .page-foot {
-  margin: var(--space-8) 0 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
+  margin: 0;
+  text-align: center;
   color: var(--quiet);
+  pointer-events: none;
 }
 
 /* Mobile ------------------------------------------------------------------ */
