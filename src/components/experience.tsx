@@ -16,6 +16,7 @@ export function Experience() {
   const [phase, setPhase] = useState<Phase>("film");
   const [still, setStill] = useState(false);
   const [ended, setEnded] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const [playId, setPlayId] = useState(0);
 
   useLayoutEffect(() => {
@@ -32,14 +33,25 @@ export function Experience() {
   }, [phase]);
 
   useEffect(() => {
-    if (!ended || phase !== "film") return;
+    if (!ended || phase !== "film" || exiting) return;
     document.querySelector<HTMLButtonElement>(".explore")?.focus();
-  }, [ended, phase, playId]);
+  }, [ended, phase, playId, exiting]);
+
+  function goSite() {
+    if (exiting) return;
+    if (prefersReduced()) {
+      setPhase("site");
+      return;
+    }
+    setExiting(true);
+    window.setTimeout(() => setPhase("site"), 560);
+  }
 
   function replay() {
     setPlayId((id) => id + 1);
     setEnded(false);
     setStill(false);
+    setExiting(false);
     setPhase("film");
     if (prefersReduced()) {
       setStill(true);
@@ -59,9 +71,10 @@ export function Experience() {
         key={`film-${playId}`}
         still={still}
         ended={ended}
+        exiting={exiting}
         onEnded={() => setEnded(true)}
-        onSkip={() => setPhase("site")}
-        onExplore={() => setPhase("site")}
+        onSkip={goSite}
+        onExplore={goSite}
       />
     </>
   );

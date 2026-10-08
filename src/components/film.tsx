@@ -3,25 +3,39 @@
 import { useEffect, useState } from "react";
 
 const CUES: [number, string][] = [
-  [150, "Tsoncho. Student. Software specialist. Entrepreneur."],
-  [3950, "Junior Software Specialist. ATM and POS. Early career. Big momentum."],
-  [7850, "Software. AI. Automation. Experiments."],
-  [14150, "Learn. Create. Automate. Improve."],
-  [21150, "What's next?"],
-  [24050, "Let's talk."],
+  [350, "Tsoncho. Student. Software specialist. Entrepreneur."],
+  [5100, "Junior Software Specialist. ATM and POS."],
+  [7800, "Early in. Already moving."],
+  [10200, "Software. AI. Automation. Experiments."],
+  [17000, "Learn. Create. Automate. Improve."],
+  [22200, "What's next?"],
+  [23600, "Let's talk."],
 ];
 
-const practice = ["Software", "AI", "Automation", "Experiments"];
+const domains = [
+  ["software", "Software"],
+  ["ai", "AI"],
+  ["auto", "Automation"],
+  ["exp", "Experiments"],
+] as const;
+
+const cycle = [
+  ["learn", "Learn"],
+  ["create", "Create"],
+  ["automate", "Automate"],
+  ["improve", "Improve"],
+] as const;
 
 type FilmProps = {
   still: boolean;
   ended: boolean;
+  exiting?: boolean;
   onEnded: () => void;
   onSkip: () => void;
   onExplore: () => void;
 };
 
-export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
+export function Film({ still, ended, exiting, onEnded, onSkip, onExplore }: FilmProps) {
   const [cue, setCue] = useState(still ? "Let's talk." : "");
   const [creditsOn, setCreditsOn] = useState(still);
 
@@ -35,8 +49,8 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
     setCue("");
     setCreditsOn(false);
     const timers = CUES.map(([at, text]) => window.setTimeout(() => setCue(text), at));
-    const credits = window.setTimeout(() => setCreditsOn(true), 24000);
-    const open = window.setTimeout(() => onEnded(), 25600);
+    const credits = window.setTimeout(() => setCreditsOn(true), 23400);
+    const open = window.setTimeout(() => onEnded(), 25000);
     return () => {
       timers.forEach((id) => window.clearTimeout(id));
       window.clearTimeout(credits);
@@ -44,7 +58,13 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
     };
   }, [still]);
 
-  const className = ["reel", "is-playing", still ? "is-still" : "", ended ? "is-ended" : ""]
+  const className = [
+    "reel",
+    "is-playing",
+    still ? "is-still" : "",
+    ended ? "is-ended" : "",
+    exiting ? "is-exiting" : "",
+  ]
     .filter(Boolean)
     .join(" ");
 
@@ -60,60 +80,52 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
         {cue}
       </p>
 
-      <div className="marks" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <svg className="lattice" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <g fill="none" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke">
-          <line x1="5" y1="14" x2="16" y2="24" />
-          <line x1="16" y1="24" x2="11" y2="38" />
-          <line x1="84" y1="12" x2="95" y2="24" />
-          <line x1="84" y1="12" x2="90" y2="34" />
-          <line x1="6" y1="82" x2="15" y2="68" />
-          <line x1="86" y1="74" x2="95" y2="88" />
-        </g>
-      </svg>
-
       <div className="cam">
-        <div className="shot intro">
-          <p className="display name">Tsoncho</p>
-          <p className="kicker">
+        <div className="beat name-beat" aria-hidden="true">
+          <p className="glyph name-glyph">Tsoncho</p>
+        </div>
+
+        <div className="beat id-beat" aria-hidden="true">
+          <p className="id-line">
             <span>Student.</span>
             <span>Software specialist.</span>
             <span>Entrepreneur.</span>
           </p>
         </div>
 
-        <div className="shot career">
-          <p className="display role-line">Junior Software Specialist</p>
-          <p className="signal">ATM &amp; POS</p>
-          <span className="rule" />
-          <p className="note">Early career. Big momentum.</p>
+        <div className="beat career-beat" aria-hidden="true">
+          <p className="glyph role-glyph">Junior Software Specialist</p>
+          <p className="signal-glyph">ATM &amp; POS</p>
         </div>
 
-        <div className="shot practice">
-          {practice.map((word, index) => (
-            <p key={word} className={`display line l${index + 1}`}>
-              {word}
+        <div className="beat drive-beat" aria-hidden="true">
+          <p className="drive-early">Early in.</p>
+          <p className="drive-already">Already</p>
+          <p className="drive-moving">Moving.</p>
+        </div>
+
+        <div className="beat domain-beat" aria-hidden="true">
+          {domains.map(([key, label]) => (
+            <p key={key} className={`glyph domain domain-${key}`}>
+              {label}
             </p>
           ))}
         </div>
 
-        <div className="shot momentum">
-          <p className="display step s1">Learn</p>
-          <p className="display step s2">Create</p>
-          <p className="display step s3">Automate</p>
-          <p className="display step s4">Improve</p>
+        <div className="beat cycle-beat" aria-hidden="true">
+          {cycle.map(([key, label]) => (
+            <p key={key} className={`glyph cycle cycle-${key}`}>
+              {label}
+            </p>
+          ))}
         </div>
 
-        <p className="display shot future">What&apos;s next?</p>
+        <p className="glyph beat future-beat" aria-hidden="true">
+          What&apos;s next?
+        </p>
 
-        <div className="credits" inert={creditsOn ? undefined : true}>
-          <p className="display end-line">Let&apos;s talk.</p>
+        <div className="beat end-beat" inert={creditsOn ? undefined : true}>
+          <p className="glyph end-line">Let&apos;s talk.</p>
           <a className="mail" href="mailto:terziiskitsoncho@gmail.com">
             terziiskitsoncho@gmail.com
           </a>
@@ -121,9 +133,9 @@ export function Film({ still, ended, onEnded, onSkip, onExplore }: FilmProps) {
             className="explore"
             type="button"
             onClick={onExplore}
-            tabIndex={ended ? 0 : -1}
+            tabIndex={ended || still ? 0 : -1}
           >
-            Enter portfolio
+            Enter portfolio →
           </button>
         </div>
       </div>
