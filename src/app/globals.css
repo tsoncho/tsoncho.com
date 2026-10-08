@@ -641,8 +641,14 @@ main {
     transform: none !important;
     filter: none !important;
     opacity: 0.85 !important;
-    clip-path: none !important;
     animation: none !important;
+  }
+
+  .hero-frame,
+  .hero-title,
+  .hero-word,
+  .scroll-cue {
+    clip-path: none !important;
   }
 
   .scroll-cue::after {
