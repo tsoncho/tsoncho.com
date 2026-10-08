@@ -447,7 +447,7 @@ main {
 /* Role -------------------------------------------------------------------- */
 
 .role {
-  height: 240vh;
+  height: 180vh;
 }
 
 .role-stage {
@@ -615,7 +615,7 @@ main {
   }
 
   .role {
-    height: 210vh;
+    height: 160vh;
   }
 
   .domains {
