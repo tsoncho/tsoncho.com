@@ -105,9 +105,7 @@ export function Landing() {
               Tsoncho
             </h1>
             <p className="hero-kicker">
-              <span>Student.</span>
-              <span>Software Specialist.</span>
-              <span>Entrepreneur.</span>
+              Student. Software Specialist. Entrepreneur.
             </p>
           </div>
           <p className="scroll-cue" aria-hidden="true">
