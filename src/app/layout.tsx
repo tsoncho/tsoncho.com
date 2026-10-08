@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     template: "%s — Tsoncho",
   },
   description:
-    "Tsoncho — Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
+    "Tsoncho — Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
   authors: [{ name: "Tsoncho", url: "https://tsoncho.com" }],
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Tsoncho",
     description:
-      "Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
+      "Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
     url: "https://tsoncho.com",
     siteName: "tsoncho.com",
     locale: "en",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Tsoncho",
     description:
-      "Bulgarian student, software specialist and entrepreneur. Junior Software Specialist in ATM & POS.",
+      "Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
   },
 };
 
