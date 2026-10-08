@@ -443,7 +443,7 @@ main {
 /* Domains ----------------------------------------------------------------- */
 
 .domains {
-  height: 300vh;
+  height: 240vh;
 }
 
 .domain-stage {
@@ -470,8 +470,7 @@ main {
 
 .domains[data-stage="0"] .domain[data-i="0"],
 .domains[data-stage="1"] .domain[data-i="1"],
-.domains[data-stage="2"] .domain[data-i="2"],
-.domains[data-stage="3"] .domain[data-i="3"] {
+.domains[data-stage="2"] .domain[data-i="2"] {
   opacity: 1;
   transform: none;
   filter: blur(0);
@@ -481,7 +480,7 @@ main {
   max-width: 12ch;
 }
 
-.domain[data-i="1"] .domain-word {
+.domain[data-i="0"] .domain-word {
   color: var(--accent);
 }
 
@@ -574,7 +573,7 @@ main {
   }
 
   .domains {
-    height: 260vh;
+    height: 210vh;
   }
 
   .contact {

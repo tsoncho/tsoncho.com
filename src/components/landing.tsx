@@ -6,10 +6,6 @@ const EMAIL = "terziiskitsoncho@gmail.com";
 
 const domains = [
   {
-    word: "Software",
-    line: "Creating useful things with code.",
-  },
-  {
     word: "AI",
     line: "Exploring how intelligence becomes useful software.",
   },
@@ -143,7 +139,7 @@ export function Landing() {
           id="explore"
           className="band domains"
           data-track
-          data-stages="4"
+          data-stages="3"
           aria-labelledby="domains-title"
         >
           <div className="pin">
