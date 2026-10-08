@@ -27,15 +27,15 @@ html[data-theme="light"] {
   --fg: #12141a;
   --muted: #5c5a54;
   --quiet: #8a877e;
-  --accent: #4f50e8;
-  --accent-soft: rgba(79, 80, 232, 0.22);
-  --accent-line: rgba(79, 80, 232, 0.4);
+  --accent: #5c5dff;
+  --accent-soft: rgba(92, 93, 255, 0.26);
+  --accent-line: rgba(92, 93, 255, 0.62);
   --copied-line: rgba(18, 20, 26, 0.28);
-  --atm-top: rgba(103, 104, 255, 0.12);
-  --atm-mid: rgba(103, 104, 255, 0.06);
-  --atm-plane-a: rgba(79, 80, 232, 0.14);
-  --atm-plane-b: rgba(40, 42, 70, 0.08);
-  --atm-glow: rgba(79, 80, 232, 0.16);
+  --atm-top: rgba(92, 93, 255, 0.14);
+  --atm-mid: rgba(92, 93, 255, 0.08);
+  --atm-plane-a: rgba(92, 93, 255, 0.18);
+  --atm-plane-b: rgba(40, 42, 70, 0.1);
+  --atm-glow: rgba(92, 93, 255, 0.2);
   --grain-opacity: 0.03;
   color-scheme: light;
 }
@@ -282,8 +282,10 @@ a {
 
 .theme-toggle {
   appearance: none;
+  display: grid;
+  place-items: center;
   margin: 0;
-  padding: 0;
+  padding: 0.15rem;
   border: 0;
   background: transparent;
   color: var(--quiet);
@@ -294,6 +296,10 @@ a {
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
   color: var(--fg);
+}
+
+.theme-icon {
+  display: block;
 }
 
 /* Type system ------------------------------------------------------------- */
@@ -593,11 +599,15 @@ main {
 
 .copy-mail-label {
   color: var(--accent);
-  border-bottom: 1px solid var(--accent-line);
+  border-bottom: 1.5px solid var(--accent-line);
   padding-bottom: 0.15rem;
   transition:
     color 0.3s var(--ease),
     border-color 0.3s var(--ease);
+}
+
+html[data-theme="light"] .copy-mail-label {
+  border-bottom-width: 2px;
 }
 
 .copy-mail-address {
