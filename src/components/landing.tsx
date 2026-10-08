@@ -43,8 +43,7 @@ export function Landing() {
     const root = rootRef.current;
     if (!root) return;
 
-    const reduced = prefersReduced();
-    document.documentElement.dataset.motion = reduced ? "reduce" : "ok";
+    document.documentElement.dataset.motion = prefersReduced() ? "reduce" : "ok";
 
     let frame = 0;
 
@@ -52,8 +51,7 @@ export function Landing() {
       frame = 0;
       const vh = window.innerHeight || 1;
       const max = Math.max(1, document.documentElement.scrollHeight - vh);
-      const scroll = window.scrollY / max;
-      root.style.setProperty("--page", scroll.toFixed(4));
+      root.style.setProperty("--page", (window.scrollY / max).toFixed(4));
 
       root.querySelectorAll<HTMLElement>("[data-track]").forEach((track) => {
         const rect = track.getBoundingClientRect();
@@ -62,14 +60,15 @@ export function Landing() {
         track.style.setProperty("--p", progress.toFixed(4));
 
         const stages = Number(track.dataset.stages || "1");
-        const stage = Math.min(stages - 1, Math.floor(progress * stages));
-        track.dataset.stage = String(stage);
+        track.dataset.stage = String(
+          Math.min(stages - 1, Math.floor(progress * stages)),
+        );
       });
 
       const hero = root.querySelector<HTMLElement>("[data-hero]");
       if (hero) {
         const rect = hero.getBoundingClientRect();
-        const local = Math.min(1, Math.max(0, 1 - rect.bottom / (vh * 1.15)));
+        const local = Math.min(1, Math.max(0, 1 - rect.bottom / (vh * 1.1)));
         hero.style.setProperty("--h", local.toFixed(4));
       }
     };
@@ -111,102 +110,134 @@ export function Landing() {
 
       <main>
         <section id="top" className="hero" data-hero aria-labelledby="hero-title">
-          <p className="eyebrow">Bulgaria</p>
-          <h1 id="hero-title" className="display hero-title">
-            Tsoncho
-          </h1>
-          <p className="hero-kicker">
-            <span>Student.</span>
-            <span>Software Specialist.</span>
-            <span>Entrepreneur.</span>
-          </p>
+          <div className="frame hero-frame">
+            <p className="label">Bulgaria</p>
+            <h1 id="hero-title" className="type-xl hero-title">
+              Tsoncho
+            </h1>
+            <p className="hero-kicker">
+              <span>Student.</span>
+              <span>Software Specialist.</span>
+              <span>Entrepreneur.</span>
+            </p>
+          </div>
           <p className="scroll-cue" aria-hidden="true">
             Scroll
           </p>
         </section>
 
-        <section id="about" className="band identity" data-track data-stages="5" aria-labelledby="identity-title">
+        <section
+          id="about"
+          className="band identity"
+          data-track
+          data-stages="5"
+          aria-labelledby="identity-title"
+        >
           <div className="pin">
-            <p className="mark">01 — Identity</p>
-            <h2 id="identity-title" className="display statement">
-              I make things move.
-            </h2>
-            <div className="verb-stage" aria-hidden="true">
-              {verbs.map((verb, index) => (
-                <p key={verb} className="display verb" data-i={index}>
-                  {verb}.
-                </p>
-              ))}
-            </div>
-            <ul className="sr-only">
-              {verbs.map((verb) => (
-                <li key={verb}>{verb}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section id="work" className="band role" data-track data-stages="3" aria-labelledby="role-title">
-          <div className="pin">
-            <p className="mark">02 — Role</p>
-            <div className="role-stage">
-              <h2 id="role-title" className="display role-line" data-i="0">
-                Junior Software Specialist
+            <div className="frame">
+              <p className="label">01 — Identity</p>
+              <h2 id="identity-title" className="type-lg statement">
+                I make things move.
               </h2>
-              <p className="display role-line accent-line" data-i="1">
-                ATM &amp; POS
-              </p>
-              <p className="display role-line focus-line" data-i="2">
-                Early in. Already moving.
-              </p>
+              <div className="verb-stage" aria-hidden="true">
+                {verbs.map((verb, index) => (
+                  <p key={verb} className="type-lg verb" data-i={index}>
+                    {verb}.
+                  </p>
+                ))}
+              </div>
+              <ul className="sr-only">
+                {verbs.map((verb) => (
+                  <li key={verb}>{verb}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
 
-        <section className="band domains" data-track data-stages="4" aria-labelledby="domains-title">
+        <section
+          id="work"
+          className="band role"
+          data-track
+          data-stages="3"
+          aria-labelledby="role-title"
+        >
           <div className="pin">
-            <p className="mark">03 — Explore</p>
-            <h2 id="domains-title" className="sr-only">
-              What I do
-            </h2>
-            <div className="domain-stage">
-              {domains.map((domain, index) => (
-                <article key={domain.word} className="domain" data-i={index}>
-                  <p className="display domain-word">{domain.word}</p>
-                  <p className="domain-line">{domain.line}</p>
-                </article>
-              ))}
+            <div className="frame">
+              <p className="label">02 — Role</p>
+              <div className="role-stage">
+                <h2 id="role-title" className="type-md role-line" data-i="0">
+                  Junior Software Specialist
+                </h2>
+                <p className="type-md role-line role-secondary" data-i="1">
+                  ATM &amp; POS
+                </p>
+                <p className="type-md role-line role-support" data-i="2">
+                  Early in. Already moving.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="band think" data-track data-stages="1" aria-labelledby="think-title">
-          <div className="pin think-pin">
-            <p className="mark">04 — System</p>
-            <h2 id="think-title" className="sr-only">
-              How I think
-            </h2>
-            <div className="chain" aria-hidden="true">
-              {verbs.map((verb, index) => (
-                <span key={verb} className="chain-item">
-                  <span className="display chain-word">{verb}</span>
-                  {index < verbs.length - 1 ? (
-                    <span className="chain-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  ) : null}
-                </span>
-              ))}
+        <section
+          className="band domains"
+          data-track
+          data-stages="4"
+          aria-labelledby="domains-title"
+        >
+          <div className="pin">
+            <div className="frame">
+              <p className="label">03 — Explore</p>
+              <h2 id="domains-title" className="sr-only">
+                What I do
+              </h2>
+              <div className="domain-stage">
+                {domains.map((domain, index) => (
+                  <article key={domain.word} className="domain" data-i={index}>
+                    <p className="type-lg domain-word">{domain.word}</p>
+                    <p className="body domain-line">{domain.line}</p>
+                  </article>
+                ))}
+              </div>
             </div>
-            <p className="chain-caption">A continuous loop.</p>
-            <p className="sr-only">Learn, create, automate, improve.</p>
+          </div>
+        </section>
+
+        <section
+          className="band think"
+          data-track
+          data-stages="1"
+          aria-labelledby="think-title"
+        >
+          <div className="pin">
+            <div className="frame">
+              <p className="label">04 — System</p>
+              <h2 id="think-title" className="sr-only">
+                How I think
+              </h2>
+              <div className="chain" aria-hidden="true">
+                {verbs.map((verb, index) => (
+                  <span key={verb} className="chain-item">
+                    <span className="type-md chain-word">{verb}</span>
+                    {index < verbs.length - 1 ? (
+                      <span className="chain-arrow" aria-hidden="true">
+                        →
+                      </span>
+                    ) : null}
+                  </span>
+                ))}
+              </div>
+              <p className="label chain-caption">A continuous loop.</p>
+              <p className="sr-only">Learn, create, automate, improve.</p>
+            </div>
           </div>
         </section>
 
         <section className="band now" aria-labelledby="now-title">
-          <div className="now-inner">
-            <p className="mark">05 — Now</p>
-            <h2 id="now-title" className="display now-title">
+          <div className="frame now-frame">
+            <p className="label">05 — Now</p>
+            <h2 id="now-title" className="type-xl now-title">
               Now
             </h2>
             <ul className="now-list">
@@ -214,13 +245,13 @@ export function Landing() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <p className="display now-end">Exploring what&apos;s next.</p>
+            <p className="type-md now-end">Exploring what&apos;s next.</p>
           </div>
         </section>
 
         <section className="band future" aria-labelledby="future-title">
-          <div className="future-inner">
-            <h2 id="future-title" className="display future-title">
+          <div className="frame future-frame">
+            <h2 id="future-title" className="type-xl future-title">
               What&apos;s next?
             </h2>
             <ul className="future-lines">
@@ -232,9 +263,9 @@ export function Landing() {
         </section>
 
         <section id="contact" className="band contact" aria-labelledby="contact-title">
-          <div className="contact-inner">
-            <p className="mark">06 — Contact</p>
-            <h2 id="contact-title" className="display contact-title">
+          <div className="frame contact-frame">
+            <p className="label">06 — Contact</p>
+            <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>
             <ul className="contact-links">
@@ -258,13 +289,12 @@ export function Landing() {
                 </a>
               </li>
             </ul>
-            <p className="contact-mail">terziiskitsoncho@gmail.com</p>
           </div>
         </section>
       </main>
 
       <footer className="page-foot">
-        <p>tsoncho.com</p>
+        <p>Tsoncho © 2026</p>
       </footer>
     </div>
   );
