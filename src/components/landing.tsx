@@ -48,6 +48,13 @@ function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function isTouchDeck() {
+  return (
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.matchMedia("(hover: none)").matches
+  );
+}
+
 export function Landing() {
   const pathname = usePathname() || "/";
   const router = useRouter();
@@ -129,20 +136,31 @@ export function Landing() {
     if (!root) return;
 
     const reduced = prefersReduced();
+    const touch = isTouchDeck();
     document.documentElement.dataset.motion = reduced ? "reduce" : "ok";
-    document.documentElement.dataset.deck = reduced ? "free" : "snap";
+    // Touch: JS owns the deck. Desktop: CSS snap assists.
+    document.documentElement.dataset.deck = reduced
+      ? "free"
+      : touch
+        ? "touch"
+        : "snap";
 
     let frame = 0;
     let lockTimer = 0;
     let quietTimer = 0;
     let touchY = 0;
+    let touchX = 0;
     let touchArmed = false;
+    let touchDragging = false;
     let pinExplore = false;
     let pinHero = false;
     let wheelQuietUntil = 0;
     const lastDomain = domains.length - 1;
     const EXPLORE = 1;
     const HOME = 0;
+    const lockMs = touch ? 520 : 780;
+    const domainMs = touch ? 480 : 720;
+    const swipeThreshold = touch ? 32 : 42;
 
     const panels = () =>
       Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
@@ -174,12 +192,20 @@ export function Landing() {
       }
     };
 
-    const enableSnap = (on: boolean) => {
+    const setDeckMode = (mode: "snap" | "free" | "touch") => {
       if (reduced) {
         document.documentElement.dataset.deck = "free";
         return;
       }
-      document.documentElement.dataset.deck = on ? "snap" : "free";
+      document.documentElement.dataset.deck = mode;
+    };
+
+    const enableSnap = (on: boolean) => {
+      if (touch) {
+        setDeckMode("touch");
+        return;
+      }
+      setDeckMode(on ? "snap" : "free");
     };
 
     const syncUrl = (index: number) => {
@@ -209,19 +235,22 @@ export function Landing() {
       if (!panel) return;
       syncUrl(next);
 
+      const hard = instant || reduced || touch;
+
       if (next === HOME) {
         pinHero = true;
         freezeHero();
         enableSnap(false);
         lockedRef.current = true;
         window.clearTimeout(lockTimer);
-        if (instant || reduced) {
+        if (hard) {
           window.scrollTo(0, panelTop(HOME));
           freezeHero();
           restAtmosphere();
           pinHero = false;
           lockedRef.current = false;
           enableSnap(true);
+          measure();
           return;
         }
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -234,14 +263,15 @@ export function Landing() {
           enableSnap(true);
           quietWheel(160);
           measure();
-        }, 820);
+        }, lockMs);
         return;
       }
 
-      if (instant || reduced) {
+      if (hard) {
         enableSnap(false);
         window.scrollTo(0, panelTop(next));
         enableSnap(true);
+        measure();
         return;
       }
       panel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -264,19 +294,15 @@ export function Landing() {
       const heroTop = hero?.getBoundingClientRect().top ?? 0;
       const nearHome = index === HOME && Math.abs(heroTop) < 10;
 
-      // Atmosphere tracks scroll live; only hard-rest when settled on the hero.
       if (nearHome && !pinHero) {
         restAtmosphere();
       } else {
-        root.style.setProperty(
-          "--page",
-          (window.scrollY / max).toFixed(4),
-        );
+        root.style.setProperty("--page", (window.scrollY / max).toFixed(4));
       }
 
       if (hero) {
-        // Parallax only while leaving the hero — never while returning/settling.
         const leaving =
+          !touch &&
           index === HOME &&
           !nearHome &&
           !pinHero &&
@@ -305,28 +331,15 @@ export function Landing() {
         alignPanel(EXPLORE);
         return;
       }
-      // While returning home, keep measuring so atmosphere eases with scroll
-      // instead of freezing mid-trip and popping at the end.
-      if (pinHero) {
-        freezeHero();
-      }
+      if (pinHero) freezeHero();
       if (frame) return;
       frame = requestAnimationFrame(measure);
     };
 
-    const lockBriefly = (ms = 780, settle?: 0 | typeof EXPLORE) => {
+    const lockBriefly = (ms = lockMs) => {
       lockedRef.current = true;
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
-        if (settle === 0) {
-          alignPanel(0);
-          freezeHero();
-          pinHero = false;
-          enableSnap(true);
-        }
-        if (settle === EXPLORE) {
-          alignPanel(EXPLORE);
-        }
         lockedRef.current = false;
         measure();
       }, ms);
@@ -340,7 +353,6 @@ export function Landing() {
       }, ms);
     };
 
-    // Domain crossfade: freeze scroll + snap so nothing drifts after settle.
     const holdExploreDomain = (nextDomain: number) => {
       lockedRef.current = true;
       pinExplore = true;
@@ -348,7 +360,7 @@ export function Landing() {
       alignPanel(EXPLORE);
       setDomain(nextDomain);
       alignPanel(EXPLORE);
-      quietWheel(220);
+      quietWheel(touch ? 140 : 220);
 
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
@@ -357,9 +369,9 @@ export function Landing() {
         lockedRef.current = false;
         enableSnap(true);
         alignPanel(EXPLORE);
-        quietWheel(180);
+        quietWheel(touch ? 120 : 180);
         measure();
-      }, 720);
+      }, domainMs);
     };
 
     const step = (direction: 1 | -1) => {
@@ -382,7 +394,7 @@ export function Landing() {
       const nextPanel = panel + direction;
       if (nextPanel < 0 || nextPanel > panels().length - 1) return;
 
-      quietWheel(200);
+      quietWheel(touch ? 140 : 200);
       if (nextPanel === EXPLORE) {
         setDomain(direction === 1 ? 0 : lastDomain);
       }
@@ -391,7 +403,7 @@ export function Landing() {
     };
 
     const onWheel = (event: WheelEvent) => {
-      if (reduced) return;
+      if (reduced || touch) return;
       event.preventDefault();
       if (Math.abs(event.deltaY) < 8) return;
       if (performance.now() < wheelQuietUntil) return;
@@ -412,28 +424,65 @@ export function Landing() {
     };
 
     const onTouchStart = (event: TouchEvent) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest("a, button, input, textarea, label")
+      ) {
+        touchArmed = false;
+        return;
+      }
       touchY = event.touches[0]?.clientY ?? 0;
+      touchX = event.touches[0]?.clientX ?? 0;
       touchArmed = true;
+      touchDragging = false;
     };
 
     const onTouchMove = (event: TouchEvent) => {
       if (reduced || !touchArmed) return;
-      // Explore owns the gesture — never let native scroll bleed into snap.
-      if (activeIndex() === EXPLORE || pinExplore) {
-        event.preventDefault();
+      const y = event.touches[0]?.clientY ?? touchY;
+      const x = event.touches[0]?.clientX ?? touchX;
+      const dy = touchY - y;
+      const dx = touchX - x;
+
+      if (!touchDragging) {
+        if (Math.abs(dy) < 8 && Math.abs(dx) < 8) return;
+        // Horizontal intent — leave alone (nav/browser gestures).
+        if (Math.abs(dx) > Math.abs(dy)) {
+          touchArmed = false;
+          return;
+        }
+        touchDragging = true;
       }
+
+      // Own vertical swipes so native scroll + step() never fight.
+      event.preventDefault();
+      if (pinExplore) alignPanel(EXPLORE);
     };
 
     const onTouchEnd = (event: TouchEvent) => {
       if (reduced || !touchArmed) return;
+      const wasDragging = touchDragging;
       touchArmed = false;
+      touchDragging = false;
       const endY = event.changedTouches[0]?.clientY ?? touchY;
       const delta = touchY - endY;
-      if (Math.abs(delta) < 42) {
+      if (!wasDragging || Math.abs(delta) < swipeThreshold) {
         if (activeIndex() === EXPLORE) alignPanel(EXPLORE);
+        else if (activeIndex() === HOME) {
+          alignPanel(HOME);
+          freezeHero();
+          restAtmosphere();
+        }
         return;
       }
       step(delta > 0 ? 1 : -1);
+    };
+
+    const onViewport = () => {
+      if (lockedRef.current || pinExplore || pinHero) return;
+      alignPanel(urlIndexRef.current);
+      measure();
     };
 
     const start = indexFor(pathRef.current);
@@ -443,7 +492,8 @@ export function Landing() {
     }
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onViewport);
+    window.visualViewport?.addEventListener("resize", onViewport);
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
     window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -452,7 +502,8 @@ export function Landing() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onViewport);
+      window.visualViewport?.removeEventListener("resize", onViewport);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("touchstart", onTouchStart);
