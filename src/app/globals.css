@@ -444,51 +444,6 @@ main {
   }
 }
 
-/* Role -------------------------------------------------------------------- */
-
-.role {
-  height: 180vh;
-}
-
-.role-stage {
-  position: relative;
-  width: 100%;
-  min-height: 10rem;
-}
-
-.role-line {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  margin: 0;
-  max-width: 16ch;
-  margin-inline: auto;
-  opacity: 0;
-  transform: translate3d(0, 5vh, 0) scale(1.03);
-  filter: blur(5px);
-  transition:
-    opacity 0.55s var(--ease-move),
-    transform 0.7s var(--ease-move),
-    filter 0.55s var(--ease-move);
-}
-
-.role[data-stage="0"] .role-line[data-i="0"],
-.role[data-stage="1"] .role-line[data-i="1"] {
-  opacity: 1;
-  transform: none;
-  filter: blur(0);
-}
-
-.role-line[data-i="0"] {
-  font-weight: var(--weight-strong);
-}
-
-.role-secondary {
-  color: var(--accent);
-  font-weight: var(--weight-display);
-}
-
 /* Domains ----------------------------------------------------------------- */
 
 .domains {
@@ -614,10 +569,6 @@ main {
     gap: var(--space-3);
   }
 
-  .role {
-    height: 160vh;
-  }
-
   .domains {
     height: 260vh;
   }
@@ -667,7 +618,6 @@ main {
     animation: none !important;
   }
 
-  .role,
   .domains {
     height: auto;
   }
@@ -683,7 +633,6 @@ main {
     gap: var(--space-5);
   }
 
-  .role-stage,
   .domain-stage {
     position: static;
     display: grid;
@@ -692,7 +641,6 @@ main {
     place-items: center;
   }
 
-  .role-line,
   .domain {
     position: static;
     opacity: 1 !important;

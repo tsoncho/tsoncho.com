@@ -91,7 +91,6 @@ export function Landing() {
           Tsoncho
         </a>
         <nav aria-label="Page">
-          <a href="#work">Work</a>
           <a href="#explore">Explore</a>
           <a href="#contact">Contact</a>
         </nav>
@@ -111,28 +110,6 @@ export function Landing() {
         </section>
 
         <section
-          id="work"
-          className="band role"
-          data-track
-          data-stages="2"
-          aria-labelledby="role-title"
-        >
-          <div className="pin">
-            <div className="frame">
-              <p className="label">01 — Work</p>
-              <div className="role-stage">
-                <h2 id="role-title" className="type-md role-line" data-i="0">
-                  Junior Software Specialist
-                </h2>
-                <p className="type-md role-line role-secondary" data-i="1">
-                  ATM &amp; POS
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
           id="explore"
           className="band domains"
           data-track
@@ -141,7 +118,7 @@ export function Landing() {
         >
           <div className="pin">
             <div className="frame">
-              <p className="label">02 — Explore</p>
+              <p className="label">01 — Explore</p>
               <h2 id="domains-title" className="sr-only">
                 What I do
               </h2>
@@ -159,7 +136,7 @@ export function Landing() {
 
         <section id="contact" className="band contact" aria-labelledby="contact-title">
           <div className="frame contact-frame">
-            <p className="label">03 — Contact</p>
+            <p className="label">02 — Contact</p>
             <h2 id="contact-title" className="type-xl contact-title">
               Let&apos;s talk.
             </h2>
