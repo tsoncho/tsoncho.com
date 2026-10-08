@@ -320,16 +320,20 @@ main {
 .hero {
   position: relative;
   min-height: 100svh;
+  min-height: 100dvh;
   display: grid;
-  place-items: center;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  align-items: center;
   padding:
-    calc(var(--space-8) + env(safe-area-inset-top))
+    calc(var(--space-7) + env(safe-area-inset-top))
     var(--gutter)
-    var(--space-8);
+    calc(var(--space-5) + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
 .hero-frame {
+  grid-row: 2;
   transform: translate3d(0, calc(var(--h, 0) * -3vh), 0);
   opacity: calc(1 - var(--h, 0) * 0.45);
 }
@@ -407,25 +411,44 @@ main {
 }
 
 .scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: max(var(--space-5), env(safe-area-inset-bottom));
+  grid-row: 3;
+  align-self: end;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
   margin: 0;
+  padding-bottom: var(--space-1);
   color: var(--quiet);
-  transform: translateX(-50%);
-  opacity: calc(0.8 - var(--h, 0) * 1.1);
-  animation: hero-rise 1s var(--ease) 1.55s both;
+  opacity: 0;
+  animation: hero-cue-in 0.9s var(--ease) 1.55s both;
+}
+
+.hero[data-scrolled] .scroll-cue {
+  opacity: 0 !important;
+  animation: none;
+  transition: opacity 0.35s var(--ease);
 }
 
 .scroll-cue::after {
   content: "";
   display: block;
   width: 1px;
-  height: 2rem;
+  height: clamp(1.25rem, 3.2vh, 1.85rem);
   margin: var(--space-2) auto 0;
   background: linear-gradient(var(--accent), transparent);
   transform-origin: top;
-  animation: cue 2.6s var(--ease) infinite;
+  animation: cue 2.6s var(--ease) 2.4s infinite;
+}
+
+@keyframes hero-cue-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 0.85;
+    transform: none;
+  }
 }
 
 @keyframes cue {
@@ -612,7 +635,7 @@ main {
   .scroll-cue {
     transform: none !important;
     filter: none !important;
-    opacity: 1 !important;
+    opacity: 0.85 !important;
     clip-path: none !important;
     animation: none !important;
   }

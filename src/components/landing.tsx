@@ -85,6 +85,8 @@ export function Landing() {
         const rect = hero.getBoundingClientRect();
         const local = Math.min(1, Math.max(0, 1 - rect.bottom / (vh * 1.1)));
         hero.style.setProperty("--h", local.toFixed(4));
+        if (local > 0.12) hero.setAttribute("data-scrolled", "");
+        else hero.removeAttribute("data-scrolled");
       }
     };
 
