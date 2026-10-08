@@ -152,6 +152,7 @@ export function Landing() {
     let frame = 0;
     let lockTimer = 0;
     let quietTimer = 0;
+    let scrollAnim = 0;
     let touchY = 0;
     let touchX = 0;
     let touchArmed = false;
@@ -162,9 +163,10 @@ export function Landing() {
     const lastDomain = domains.length - 1;
     const EXPLORE = 1;
     const HOME = 0;
-    const lockMs = touch ? 520 : 780;
-    const domainMs = touch ? 480 : 720;
-    const swipeThreshold = touch ? 32 : 42;
+    const lockMs = touch ? 780 : 820;
+    const domainMs = touch ? 620 : 720;
+    const panelMs = touch ? 720 : 820;
+    const swipeThreshold = touch ? 36 : 42;
 
     const panels = () =>
       Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
@@ -232,6 +234,51 @@ export function Landing() {
       root.style.setProperty("--page", "0");
     };
 
+    const cancelScrollAnim = () => {
+      if (scrollAnim) cancelAnimationFrame(scrollAnim);
+      scrollAnim = 0;
+    };
+
+    // Controlled ease — reliable on iOS where native smooth scroll is flaky.
+    const animateScrollTo = (y: number, duration: number) => {
+      cancelScrollAnim();
+      const from = window.scrollY;
+      const dist = y - from;
+      if (Math.abs(dist) < 1) {
+        window.scrollTo(0, y);
+        return Promise.resolve();
+      }
+      const start = performance.now();
+      return new Promise<void>((resolve) => {
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - (1 - t) ** 3;
+          window.scrollTo(0, from + dist * eased);
+          if (t < 1) {
+            scrollAnim = requestAnimationFrame(tick);
+            return;
+          }
+          window.scrollTo(0, y);
+          scrollAnim = 0;
+          resolve();
+        };
+        scrollAnim = requestAnimationFrame(tick);
+      });
+    };
+
+    const settlePanel = (index: number) => {
+      alignPanel(index);
+      if (index === HOME) {
+        freezeHero();
+        restAtmosphere();
+        pinHero = false;
+      }
+      lockedRef.current = false;
+      enableSnap(true);
+      quietWheel(touch ? 200 : 160);
+      measure();
+    };
+
     const goTo = (index: number, instant = false) => {
       const list = panels();
       const next = Math.min(list.length - 1, Math.max(0, index));
@@ -239,7 +286,7 @@ export function Landing() {
       if (!panel) return;
       syncUrl(next);
 
-      const hard = instant || reduced || touch;
+      const hard = instant || reduced;
 
       if (next === HOME) {
         pinHero = true;
@@ -247,38 +294,46 @@ export function Landing() {
         enableSnap(false);
         lockedRef.current = true;
         window.clearTimeout(lockTimer);
+        cancelScrollAnim();
+
         if (hard) {
           window.scrollTo(0, panelTop(HOME));
-          freezeHero();
-          restAtmosphere();
-          pinHero = false;
-          lockedRef.current = false;
-          enableSnap(true);
-          measure();
+          settlePanel(HOME);
           return;
         }
+
+        if (touch) {
+          void animateScrollTo(panelTop(HOME), panelMs).then(() => {
+            settlePanel(HOME);
+          });
+          return;
+        }
+
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
-        lockTimer = window.setTimeout(() => {
-          alignPanel(HOME);
-          freezeHero();
-          restAtmosphere();
-          pinHero = false;
-          lockedRef.current = false;
-          enableSnap(true);
-          quietWheel(160);
-          measure();
-        }, lockMs);
+        lockTimer = window.setTimeout(() => settlePanel(HOME), lockMs);
         return;
       }
 
+      lockedRef.current = true;
+      enableSnap(false);
+      window.clearTimeout(lockTimer);
+      cancelScrollAnim();
+
       if (hard) {
-        enableSnap(false);
         window.scrollTo(0, panelTop(next));
-        enableSnap(true);
-        measure();
+        settlePanel(next);
         return;
       }
+
+      if (touch) {
+        void animateScrollTo(panelTop(next), panelMs).then(() => {
+          settlePanel(next);
+        });
+        return;
+      }
+
       panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      lockTimer = window.setTimeout(() => settlePanel(next), lockMs);
     };
 
     goToRef.current = goTo;
@@ -340,15 +395,6 @@ export function Landing() {
       frame = requestAnimationFrame(measure);
     };
 
-    const lockBriefly = (ms = lockMs) => {
-      lockedRef.current = true;
-      window.clearTimeout(lockTimer);
-      lockTimer = window.setTimeout(() => {
-        lockedRef.current = false;
-        measure();
-      }, ms);
-    };
-
     const quietWheel = (ms = 160) => {
       wheelQuietUntil = performance.now() + ms;
       window.clearTimeout(quietTimer);
@@ -364,7 +410,7 @@ export function Landing() {
       alignPanel(EXPLORE);
       setDomain(nextDomain);
       alignPanel(EXPLORE);
-      quietWheel(touch ? 140 : 220);
+      quietWheel(touch ? 200 : 220);
 
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
@@ -373,7 +419,7 @@ export function Landing() {
         lockedRef.current = false;
         enableSnap(true);
         alignPanel(EXPLORE);
-        quietWheel(touch ? 120 : 180);
+        quietWheel(touch ? 180 : 180);
         measure();
       }, domainMs);
     };
@@ -398,11 +444,11 @@ export function Landing() {
       const nextPanel = panel + direction;
       if (nextPanel < 0 || nextPanel > panels().length - 1) return;
 
-      quietWheel(touch ? 140 : 200);
+      quietWheel(touch ? 200 : 200);
       if (nextPanel === EXPLORE) {
         setDomain(direction === 1 ? 0 : lastDomain);
       }
-      if (nextPanel !== HOME) lockBriefly();
+      // goTo handles its own lock/settle for panel moves.
       goTo(nextPanel);
     };
 
@@ -515,6 +561,7 @@ export function Landing() {
       window.removeEventListener("touchend", onTouchEnd);
       window.clearTimeout(lockTimer);
       window.clearTimeout(quietTimer);
+      cancelScrollAnim();
       if (frame) cancelAnimationFrame(frame);
       delete document.documentElement.dataset.deck;
     };

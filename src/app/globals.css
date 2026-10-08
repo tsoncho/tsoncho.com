@@ -719,10 +719,6 @@ html[data-theme="light"] .copy-mail-label {
     row-gap: 0.02em;
   }
 
-  .hero-word {
-    will-change: auto;
-  }
-
   .scroll-cue {
     padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
   }
@@ -733,13 +729,20 @@ html[data-theme="light"] .copy-mail-label {
 
   .domain {
     gap: var(--space-3);
-    will-change: auto;
-    transform: translate3d(0, 0.55rem, 0);
-    filter: blur(3px);
+    transform: translate3d(0, 0.9rem, 0);
+    filter: blur(4px);
     transition:
-      opacity 0.4s var(--ease-move),
-      transform 0.45s var(--ease-move),
-      filter 0.4s var(--ease-move);
+      opacity 0.55s var(--ease-move),
+      transform 0.65s var(--ease-move),
+      filter 0.55s var(--ease-move);
+  }
+
+  .hero-word--first {
+    animation-duration: 1.05s;
+  }
+
+  .hero-word--last {
+    animation-duration: 1.15s;
   }
 
   .domain-line {
