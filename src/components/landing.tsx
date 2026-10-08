@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const EMAIL = "terziiskitsoncho@gmail.com";
 const THEME_KEY = "theme";
+const ROUTES = ["/", "/explore", "/contact"] as const;
 
 type Theme = "light" | "dark";
+type PanelPath = (typeof ROUTES)[number];
 
 const domains = [
   {
@@ -24,6 +28,23 @@ const domains = [
     line: "Trying ideas to see what happens.",
   },
 ] as const;
+
+function pathFor(index: number): PanelPath {
+  return ROUTES[Math.min(ROUTES.length - 1, Math.max(0, index))] ?? "/";
+}
+
+function indexFor(pathname: string): number {
+  if (pathname.startsWith("/explore")) return 1;
+  if (pathname.startsWith("/contact")) return 2;
+  return 0;
+}
+
+function hashToPath(hash: string): PanelPath | null {
+  if (hash === "#explore") return "/explore";
+  if (hash === "#contact") return "/contact";
+  if (hash === "#top" || hash === "#") return "/";
+  return null;
+}
 
 function prefersReduced() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -49,6 +70,8 @@ function applyTheme(theme: Theme) {
 }
 
 export function Landing() {
+  const pathname = usePathname() || "/";
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [domainIndex, setDomainIndex] = useState(0);
@@ -56,6 +79,13 @@ export function Landing() {
   const domainIndexRef = useRef(0);
   const copyTimer = useRef<number | null>(null);
   const themeLocked = useRef(false);
+  const goToRef = useRef<(index: number, instant?: boolean) => void>(() => {});
+  const routerRef = useRef(router);
+  const pathRef = useRef(pathname);
+  const urlIndexRef = useRef(indexFor(pathname));
+
+  routerRef.current = router;
+  pathRef.current = pathname;
 
   function toggleTheme() {
     const next: Theme = theme === "dark" ? "light" : "dark";
@@ -119,6 +149,23 @@ export function Landing() {
   }, []);
 
   useEffect(() => {
+    const legacy = hashToPath(window.location.hash);
+    if (legacy && legacy !== pathRef.current) {
+      routerRef.current.replace(legacy, { scroll: false });
+      return;
+    }
+    if (window.location.hash) {
+      window.history.replaceState(null, "", pathRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    const target = indexFor(pathname);
+    urlIndexRef.current = target;
+    goToRef.current(target, true);
+  }, [pathname]);
+
+  useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
@@ -150,16 +197,29 @@ export function Landing() {
       return best;
     };
 
-    const goTo = (index: number) => {
+    const syncUrl = (index: number) => {
+      const path = pathFor(index);
+      if (pathRef.current === path) {
+        urlIndexRef.current = index;
+        return;
+      }
+      urlIndexRef.current = index;
+      routerRef.current.replace(path, { scroll: false });
+    };
+
+    const goTo = (index: number, instant = false) => {
       const list = panels();
       const next = Math.min(list.length - 1, Math.max(0, index));
       const panel = list[next];
       if (!panel) return;
       panel.scrollIntoView({
-        behavior: reduced ? "auto" : "smooth",
+        behavior: instant || reduced ? "auto" : "smooth",
         block: "start",
       });
+      syncUrl(next);
     };
+
+    goToRef.current = goTo;
 
     const setDomain = (index: number) => {
       const next = Math.min(lastDomain, Math.max(0, index));
@@ -187,6 +247,10 @@ export function Landing() {
       panels().forEach((panel, i) => {
         panel.dataset.active = i === index ? "true" : "false";
       });
+
+      if (index !== urlIndexRef.current) {
+        syncUrl(index);
+      }
     };
 
     const onScroll = () => {
@@ -282,6 +346,7 @@ export function Landing() {
       step(delta > 0 ? 1 : -1);
     };
 
+    goTo(indexFor(pathRef.current), true);
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -305,6 +370,10 @@ export function Landing() {
     };
   }, []);
 
+  function openPanel(index: number) {
+    goToRef.current(index);
+  }
+
   return (
     <div className="page" ref={rootRef}>
       <div className="atmosphere" aria-hidden="true">
@@ -315,13 +384,22 @@ export function Landing() {
       </div>
 
       <header className="topbar">
-        <a className="brand" href="#top">
+        <Link
+          className="brand"
+          href="/"
+          scroll={false}
+          onClick={() => openPanel(0)}
+        >
           Tsoncho
-        </a>
+        </Link>
         <div className="topbar-end">
           <nav aria-label="Page">
-            <a href="#explore">Explore</a>
-            <a href="#contact">Contact</a>
+            <Link href="/explore" scroll={false} onClick={() => openPanel(1)}>
+              Explore
+            </Link>
+            <Link href="/contact" scroll={false} onClick={() => openPanel(2)}>
+              Contact
+            </Link>
           </nav>
           <button
             className="theme-toggle"
@@ -336,7 +414,6 @@ export function Landing() {
 
       <main className="deck">
         <section
-          id="top"
           className="panel hero"
           data-panel
           data-hero
@@ -354,7 +431,6 @@ export function Landing() {
         </section>
 
         <section
-          id="explore"
           className="panel explore"
           data-panel
           data-stage={domainIndex}
@@ -381,7 +457,6 @@ export function Landing() {
         </section>
 
         <section
-          id="contact"
           className="panel contact"
           data-panel
           aria-labelledby="contact-title"
