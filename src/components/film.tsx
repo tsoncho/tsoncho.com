@@ -17,32 +17,32 @@ const SCENES: {
   {
     key: "intro",
     cue: "Tsoncho. Student. Software specialist. Entrepreneur.",
-    settleAt: 2050,
+    settleAt: 3200,
   },
   {
     key: "career",
     cue: "Junior Software Specialist. ATM and POS. Early in. Already moving.",
-    settleAt: 1700,
+    settleAt: 3400,
   },
   {
     key: "practice",
     cue: "Software. AI. Automation. Experiments.",
-    settleAt: 1900,
+    settleAt: 4200,
   },
   {
     key: "momentum",
     cue: "Learn. Create. Automate. Improve.",
-    settleAt: 4200,
+    settleAt: 5600,
   },
   {
     key: "future",
     cue: "What's next?",
-    settleAt: 1200,
+    settleAt: 2800,
   },
   {
     key: "ending",
     cue: "Let's talk.",
-    settleAt: 2000,
+    settleAt: 2400,
     final: true,
   },
 ];
@@ -95,12 +95,6 @@ export function Film({ still, onExplore }: FilmProps) {
     document.querySelector<HTMLButtonElement>(".explore")?.focus();
   }, [ended, runId]);
 
-  useEffect(() => {
-    if (!showContinue) return;
-    const node = document.querySelector<HTMLButtonElement>(".continue");
-    node?.focus({ preventScroll: true });
-  }, [showContinue, runId]);
-
   function goTo(next: number) {
     setReady(false);
     setEnded(false);
@@ -121,20 +115,6 @@ export function Film({ still, onExplore }: FilmProps) {
     if (isFinal && beat !== "leave") return;
     goTo(SCENES.length - 1);
   }
-
-  useEffect(() => {
-    if (!showContinue) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      const tag = (event.target as HTMLElement | null)?.tagName;
-      if (tag === "A" || tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
-      event.preventDefault();
-      if (index >= SCENES.length - 1) return;
-      goTo(index + 1);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [showContinue, index]);
 
   const className = [
     "reel",
@@ -251,18 +231,8 @@ export function Film({ still, onExplore }: FilmProps) {
         onClick={onContinue}
         tabIndex={showContinue ? 0 : -1}
         aria-hidden={!showContinue}
-        aria-label="Continue to next scene"
       >
-        <span className="continue-rail" aria-hidden="true" />
-        <span className="continue-row">
-          <span className="continue-label">Continue</span>
-          <span className="continue-mark" aria-hidden="true">
-            <span className="continue-chevron" />
-          </span>
-        </span>
-        <span className="continue-hint" aria-hidden="true">
-          press enter
-        </span>
+        Continue <span aria-hidden="true">→</span>
       </button>
 
       <button
