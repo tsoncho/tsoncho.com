@@ -349,15 +349,18 @@ main {
 
 .hero-kicker {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 0.55em;
+  row-gap: 0.15em;
   margin: var(--space-4) 0 0;
+  max-width: 40rem;
   color: var(--muted);
   font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 400;
   letter-spacing: -0.015em;
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .scroll-cue {
@@ -571,6 +574,8 @@ main {
 
   .hero-kicker {
     margin-top: var(--space-3);
+    column-gap: 0.45em;
+    font-size: clamp(0.92rem, 3.6vw, 1.05rem);
   }
 
   .role {
