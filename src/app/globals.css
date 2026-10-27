@@ -27,7 +27,7 @@ html[data-theme="light"] {
   --bg: #f2efe6;
   --fg: #12141a;
   --muted: #5a5852;
-  --quiet: #7f7c74;
+  --quiet: #6e6b64;
   --accent: #3f42f5;
   --accent-soft: rgba(63, 66, 245, 0.28);
   --accent-line: rgba(63, 66, 245, 0.78);
@@ -110,6 +110,7 @@ html::-webkit-scrollbar {
 html[data-deck="snap"] {
   scroll-snap-type: y mandatory;
   scroll-padding: 0;
+  scroll-behavior: auto;
 }
 
 html[data-deck="touch"] {
@@ -250,7 +251,6 @@ a {
   transform: translate3d(-50%, calc(var(--page) * 90%), 0) scale(calc(1 - var(--page) * 0.28));
   opacity: calc(0.85 - var(--page) * 0.5);
   backface-visibility: hidden;
-  will-change: transform, opacity;
 }
 
 .atm-grain {
@@ -420,8 +420,7 @@ main {
 
 .panel {
   position: relative;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--panel-h, 100svh);
   display: grid;
   place-items: center;
   padding:
@@ -461,7 +460,6 @@ main {
 .hero-word {
   display: inline-block;
   opacity: 0;
-  will-change: transform, opacity, filter;
 }
 
 .hero-word--first {
@@ -469,6 +467,7 @@ main {
 }
 
 .hero-word--last {
+  position: relative;
   background: linear-gradient(
     115deg,
     var(--fg) 0%,
@@ -481,15 +480,30 @@ main {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 1.1rem var(--text-glow));
   animation:
     hero-fade-in 1.35s var(--ease) 0.85s both,
     hero-sheen 7.5s var(--ease) 2.2s infinite;
 }
 
-/* Pause sheen while hero is off-screen — avoids restarting entrance anim. */
-.hero[data-active="false"] .hero-word--last {
+.hero-word--last::before {
+  content: attr(data-glow);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--accent);
+  opacity: 0.8;
+  filter: blur(1rem);
+  pointer-events: none;
+}
+
+.hero[data-active="false"] .hero-word--last,
+html[data-idle="true"] .hero-word--last {
   animation-play-state: paused, paused;
+}
+
+.hero[data-active="false"] .scroll-cue::after,
+html[data-idle="true"] .scroll-cue::after {
+  animation-play-state: paused;
 }
 
 @keyframes hero-side-in {
@@ -517,12 +531,12 @@ main {
   }
   55% {
     opacity: 0.65;
-    filter: blur(3px) drop-shadow(0 0 0.6rem var(--text-glow));
+    filter: blur(3px);
   }
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0) drop-shadow(0 0 1.1rem var(--text-glow));
+    filter: none;
   }
 }
 
@@ -626,19 +640,22 @@ main {
   gap: var(--space-4);
   opacity: 0;
   transform: translate3d(0, 0.85rem, 0);
-  filter: blur(4px);
+  filter: none;
   pointer-events: none;
-  will-change: opacity, transform, filter;
   transition:
     opacity 0.5s var(--ease-move),
     transform 0.55s var(--ease-move),
     filter 0.5s var(--ease-move);
 }
 
+.domain-stage[data-moving] .domain:not([data-active="true"]) {
+  filter: blur(4px);
+}
+
 .domain[data-active="true"] {
   opacity: 1;
   transform: none;
-  filter: blur(0);
+  filter: none;
   pointer-events: auto;
 }
 
@@ -699,7 +716,6 @@ main {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 1.25rem var(--text-glow));
   animation: hero-rise 1.15s var(--ease) 0.12s both;
 }
 
@@ -820,8 +836,6 @@ html[data-theme="light"] .atm-glow {
   }
 
   .panel {
-    min-height: 100svh;
-    min-height: 100dvh;
     padding:
       calc(4.5rem + env(safe-area-inset-top))
       var(--gutter)
@@ -852,11 +866,14 @@ html[data-theme="light"] .atm-glow {
   .domain {
     gap: var(--space-3);
     transform: translate3d(0, 0.9rem, 0);
-    filter: blur(4px);
     transition:
       opacity 0.55s var(--ease-move),
       transform 0.65s var(--ease-move),
       filter 0.55s var(--ease-move);
+  }
+
+  .domain-stage[data-moving] .domain:not([data-active="true"]) {
+    filter: blur(4px);
   }
 
   .hero-word--first {

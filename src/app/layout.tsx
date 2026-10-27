@@ -30,13 +30,13 @@ export const metadata: Metadata = {
     template: "%s — Tsoncho",
   },
   description:
-    "Tsoncho — Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
+    "Tsoncho Terziyski. AI, automation, and experiments.",
   authors: [{ name: "Tsoncho", url: "https://tsoncho.com" }],
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Tsoncho",
     description:
-      "Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
+      "Tsoncho Terziyski. AI, automation, and experiments.",
     url: "https://tsoncho.com",
     siteName: "tsoncho.com",
     locale: "en",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Tsoncho",
     description:
-      "Bulgarian student, software specialist and entrepreneur. Early in. Already moving.",
+      "Tsoncho Terziyski. AI, automation, and experiments.",
   },
 };
 

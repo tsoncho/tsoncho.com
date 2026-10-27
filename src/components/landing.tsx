@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SiteChrome } from "@/components/site-chrome";
 
 const EMAIL = "terziiskitsoncho@gmail.com";
@@ -64,7 +64,6 @@ export function Landing() {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const [domainIndex, setDomainIndex] = useState(0);
   const domainIndexRef = useRef(0);
   const copyTimer = useRef<number | null>(null);
   const goToRef = useRef<(index: number, instant?: boolean) => void>(() => {});
@@ -96,9 +95,13 @@ export function Landing() {
     copyTimer.current = window.setTimeout(() => setCopied(false), 1800);
   }
 
-  useEffect(() => {
-    domainIndexRef.current = domainIndex;
-  }, [domainIndex]);
+  useLayoutEffect(() => {
+    const stage = rootRef.current?.querySelector<HTMLElement>(".domain-stage");
+    if (!stage) return;
+    stage.querySelectorAll<HTMLElement>(".domain").forEach((node, index) => {
+      node.dataset.active = index === domainIndexRef.current ? "true" : "false";
+    });
+  });
 
   useEffect(() => {
     return () => {
@@ -163,7 +166,6 @@ export function Landing() {
     const lastDomain = domains.length - 1;
     const EXPLORE = 1;
     const HOME = 0;
-    const lockMs = touch ? 780 : 820;
     const domainMs = touch ? 620 : 720;
     const panelMs = touch ? 720 : 820;
     const swipeThreshold = touch ? 36 : 42;
@@ -172,38 +174,53 @@ export function Landing() {
       root.querySelectorAll<HTMLElement>("[data-panel]"),
     );
     let heroEl = root.querySelector<HTMLElement>("[data-hero]");
+    let stageEl = root.querySelector<HTMLElement>(".domain-stage");
     let lastPage = "";
     let lastH = "";
     let lastPanel = -1;
+    let stride = 0;
+    let panelPx = 0;
 
     const refreshPanels = () => {
       panelList = Array.from(
         root.querySelectorAll<HTMLElement>("[data-panel]"),
       );
       heroEl = root.querySelector<HTMLElement>("[data-hero]");
+      stageEl = root.querySelector<HTMLElement>(".domain-stage");
     };
 
     const panels = () => panelList;
 
-    const activeIndex = () => {
-      const list = panelList;
-      let best = 0;
-      let bestDist = Number.POSITIVE_INFINITY;
-      for (let i = 0; i < list.length; i++) {
-        const dist = Math.abs(list[i].getBoundingClientRect().top);
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
-      }
-      return best;
+    const viewportHeight = () =>
+      Math.round(window.visualViewport?.height || window.innerHeight);
+
+    const commitPanelHeight = (next: number) => {
+      panelPx = next;
+      document.documentElement.style.setProperty("--panel-h", `${next}px`);
     };
 
-    const panelTop = (index: number) => {
-      const panel = panelList[index];
-      if (!panel) return window.scrollY;
-      return Math.round(window.scrollY + panel.getBoundingClientRect().top);
+    const syncPanelHeight = (force = false) => {
+      const next = viewportHeight();
+      if (!force && panelPx && Math.abs(next - panelPx) < 80) return false;
+      commitPanelHeight(next);
+      return true;
     };
+
+    const measureStride = () => {
+      stride = Math.round(
+        panelList[0]?.offsetHeight || panelPx || window.innerHeight || 1,
+      );
+    };
+
+    const clampPanel = (index: number) =>
+      Math.min(panelList.length - 1, Math.max(0, index));
+
+    const activeIndex = () => {
+      if (!stride) return 0;
+      return clampPanel(Math.round(window.scrollY / stride));
+    };
+
+    const panelTop = (index: number) => Math.round(clampPanel(index) * stride);
 
     const alignPanel = (index: number) => {
       const y = panelTop(index);
@@ -243,10 +260,10 @@ export function Landing() {
     const syncUrl = (index: number) => {
       const path = pathFor(index);
       urlIndexRef.current = index;
-      if (pathRef.current === path) return;
-      ignorePathnameRef.current = true;
       pathRef.current = path;
-      window.history.replaceState(window.history.state ?? null, "", path);
+      if (window.location.pathname === path) return;
+      ignorePathnameRef.current = true;
+      routerRef.current.push(path, { scroll: false });
     };
 
     const freezeHero = () => {
@@ -292,6 +309,7 @@ export function Landing() {
     };
 
     const settlePanel = (index: number) => {
+      measureStride();
       alignPanel(index);
       if (index === HOME) {
         freezeHero();
@@ -305,77 +323,49 @@ export function Landing() {
     };
 
     const goTo = (index: number, instant = false) => {
-      const list = panels();
-      const next = Math.min(list.length - 1, Math.max(0, index));
-      const panel = list[next];
-      if (!panel) return;
+      const next = clampPanel(index);
+      if (!panelList[next]) return;
       syncUrl(next);
 
       const hard = instant || reduced;
-
       if (next === HOME) {
         pinHero = true;
         freezeHero();
-        enableSnap(false);
-        lockedRef.current = true;
-        window.clearTimeout(lockTimer);
-        cancelScrollAnim();
-
-        if (hard) {
-          window.scrollTo(0, panelTop(HOME));
-          settlePanel(HOME);
-          return;
-        }
-
-        if (touch) {
-          void animateScrollTo(panelTop(HOME), panelMs).then(() => {
-            settlePanel(HOME);
-          });
-          return;
-        }
-
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
-        lockTimer = window.setTimeout(() => settlePanel(HOME), lockMs);
-        return;
       }
 
-      lockedRef.current = true;
       enableSnap(false);
+      lockedRef.current = true;
       window.clearTimeout(lockTimer);
       cancelScrollAnim();
 
+      const finish = () => settlePanel(next);
+
       if (hard) {
         window.scrollTo(0, panelTop(next));
-        settlePanel(next);
+        finish();
         return;
       }
 
-      if (touch) {
-        void animateScrollTo(panelTop(next), panelMs).then(() => {
-          settlePanel(next);
-        });
-        return;
-      }
-
-      panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      lockTimer = window.setTimeout(() => settlePanel(next), lockMs);
+      void animateScrollTo(panelTop(next), panelMs).then(finish);
     };
 
     goToRef.current = goTo;
 
-    const setDomain = (index: number) => {
+    const applyDomain = (index: number) => {
       const next = Math.min(lastDomain, Math.max(0, index));
       domainIndexRef.current = next;
-      setDomainIndex(next);
+      const nodes = stageEl?.querySelectorAll<HTMLElement>(".domain");
+      nodes?.forEach((node, i) => {
+        node.dataset.active = i === next ? "true" : "false";
+      });
     };
 
     const measure = () => {
       frame = 0;
-      const vh = window.innerHeight || 1;
+      const vh = stride || window.innerHeight || 1;
       const max = Math.max(1, document.documentElement.scrollHeight - vh);
       const index = activeIndex();
-      const heroTop = heroEl?.getBoundingClientRect().top ?? 0;
-      const nearHome = index === HOME && Math.abs(heroTop) < 10;
+      const nearHome = index === HOME && window.scrollY < 10;
 
       if (nearHome && !pinHero) {
         restAtmosphere();
@@ -392,7 +382,7 @@ export function Landing() {
           urlIndexRef.current === HOME &&
           !lockedRef.current;
         const local = leaving
-          ? Math.min(1, Math.max(0, -heroTop / Math.max(1, vh * 0.55)))
+          ? Math.min(1, Math.max(0, window.scrollY / Math.max(1, vh * 0.55)))
           : 0;
         setHeroH(local.toFixed(4));
         if (local > 0.08) heroEl.setAttribute("data-scrolled", "");
@@ -407,9 +397,6 @@ export function Landing() {
         }
       }
 
-      if (!lockedRef.current && index !== urlIndexRef.current) {
-        syncUrl(index);
-      }
     };
 
     const onScroll = () => {
@@ -435,18 +422,25 @@ export function Landing() {
       pinExplore = true;
       enableSnap(false);
       alignPanel(EXPLORE);
-      setDomain(nextDomain);
+      if (stageEl) stageEl.dataset.moving = "true";
+      const incoming = stageEl?.querySelectorAll<HTMLElement>(".domain")[nextDomain];
+      if (incoming) incoming.style.filter = "blur(4px)";
+      applyDomain(nextDomain);
+      requestAnimationFrame(() => {
+        if (incoming) incoming.style.filter = "";
+      });
       alignPanel(EXPLORE);
       quietWheel(touch ? 200 : 220);
 
       window.clearTimeout(lockTimer);
       lockTimer = window.setTimeout(() => {
+        if (stageEl) delete stageEl.dataset.moving;
         alignPanel(EXPLORE);
         pinExplore = false;
         lockedRef.current = false;
         enableSnap(true);
         alignPanel(EXPLORE);
-        quietWheel(touch ? 180 : 180);
+        quietWheel(180);
         measure();
       }, domainMs);
     };
@@ -473,7 +467,7 @@ export function Landing() {
 
       quietWheel(touch ? 200 : 200);
       if (nextPanel === EXPLORE) {
-        setDomain(direction === 1 ? 0 : lastDomain);
+        applyDomain(direction === 1 ? 0 : lastDomain);
       }
       // goTo handles its own lock/settle for panel moves.
       goTo(nextPanel);
@@ -557,14 +551,31 @@ export function Landing() {
     };
 
     const onViewport = () => {
-      refreshPanels();
       if (lockedRef.current || pinExplore || pinHero) return;
-      alignPanel(urlIndexRef.current);
+      refreshPanels();
+      const changed = syncPanelHeight(false);
+      measureStride();
+      if (changed) alignPanel(urlIndexRef.current);
       measure();
     };
 
-    const start = indexFor(pathRef.current);
+    const onVisibility = () => {
+      document.documentElement.dataset.idle = document.hidden ? "true" : "false";
+    };
+
+    const onPop = () => {
+      requestAnimationFrame(() => {
+        measureStride();
+        alignPanel(indexFor(window.location.pathname));
+        measure();
+      });
+    };
+
+    syncPanelHeight(true);
+    measureStride();
+    const start = indexFor(window.location.pathname);
     urlIndexRef.current = start;
+    pathRef.current = pathFor(start);
     if (start !== 0) {
       goTo(start, true);
     }
@@ -572,6 +583,8 @@ export function Landing() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onViewport);
     window.visualViewport?.addEventListener("resize", onViewport);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("popstate", onPop);
     window.addEventListener("keydown", onKey);
     if (!touch) {
       window.addEventListener("wheel", onWheel, { passive: false });
@@ -585,7 +598,10 @@ export function Landing() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onViewport);
       window.visualViewport?.removeEventListener("resize", onViewport);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("popstate", onPop);
       window.removeEventListener("keydown", onKey);
+      delete document.documentElement.dataset.idle;
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
@@ -599,10 +615,6 @@ export function Landing() {
   }, []);
 
   function openPanel(index: number) {
-    lockedRef.current = true;
-    window.setTimeout(() => {
-      lockedRef.current = false;
-    }, 780);
     goToRef.current(index);
   }
 
@@ -618,7 +630,9 @@ export function Landing() {
           <div className="frame hero-frame">
             <h1 id="hero-title" className="type-xl hero-title">
               <span className="hero-word hero-word--first">Tsoncho</span>
-              <span className="hero-word hero-word--last">Terziyski</span>
+              <span className="hero-word hero-word--last" data-glow="Terziyski">
+                Terziyski
+              </span>
             </h1>
           </div>
           <p className="scroll-cue" aria-hidden="true">
@@ -629,7 +643,6 @@ export function Landing() {
         <section
           className="panel explore"
           data-panel
-          data-stage={domainIndex}
           aria-labelledby="domains-title"
         >
           <div className="frame explore-frame">
@@ -642,7 +655,7 @@ export function Landing() {
                   key={domain.id}
                   className="domain"
                   data-i={index}
-                  data-active={domainIndex === index ? "true" : "false"}
+                  data-active={index === 0 ? "true" : "false"}
                 >
                   <p className="type-lg domain-word">{domain.word}</p>
                   <p className="body domain-line">{domain.line}</p>
